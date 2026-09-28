@@ -1,0 +1,151 @@
+name: docora
+description: "Every document. Beautifully simple. — A premium offline document viewer, manager and editor."
+publish_to: "none"
+version: 1.0.2+3
+
+environment:
+  sdk: ">=3.12.0 <4.0.0"
+  flutter: ">=3.44.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # --- Routing ---
+  go_router: ^14.0.0
+
+  # --- State Management ---
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # --- Database (Drift / SQLite) ---
+  drift: ^2.21.0
+  sqlite3_flutter_libs: ^0.5.0
+  path_provider: ^2.1.0
+
+  # --- Preferences & Secure Storage ---
+  shared_preferences: ^2.0.0
+  flutter_secure_storage: ^9.0.0
+
+  # --- File Access & Operations ---
+  file_picker: ^8.0.0
+  share_plus: ^10.0.0
+  open_file: ^3.0.0
+  # receive_sharing_intent: TBD in Phase 3
+  path: ^1.9.0
+  mime: ^2.0.0
+  crypto: ^3.0.0
+
+  # --- PDF Creation & Manipulation ---
+  pdf: ^3.11.1
+  image_picker: ^1.1.2
+  flutter_tts: ^4.2.0
+
+  # --- Office Format Parsing ---
+  xml: ^6.0.0
+  archive: ^3.4.0
+  excel: ^4.0.0
+  csv: ^6.0.0
+
+  # --- Rich Text / Document Editing (Phase 7) ---
+  # flutter_quill: TBD in Phase 7
+
+  # --- Text & Code Viewers ---
+  flutter_markdown: ^0.7.0
+  flutter_highlight: ^0.7.0
+  highlight: ^0.7.0
+  flutter_widget_from_html: ^0.15.0
+
+  # --- EPUB Reader (Phase 6) ---
+  # epub_view: TBD in Phase 6
+
+  # --- Image Viewer ---
+  photo_view: ^0.15.0
+  image: ^4.0.0
+
+  # --- Encryption (Vault) ---
+  encrypt: ^5.0.0
+
+  # --- Biometric Auth (Vault) ---
+  local_auth: ^2.3.0
+
+  # --- Camera & Scanner (Phase 8) ---
+  # camera: TBD in Phase 8
+  # image_picker: TBD in Phase 8
+
+  # --- OCR (Phase 8) ---
+  # google_mlkit_text_recognition: TBD in Phase 8
+
+  # --- Text-to-Speech (Phase 6) ---
+  # flutter_tts: TBD in Phase 6
+
+  # --- UI & Animations ---
+  flutter_animate: ^4.0.0
+  shimmer: ^3.0.0
+  lottie: ^3.1.0
+
+  # --- Icons ---
+  flutter_lucide: ^1.0.0
+  material_symbols_icons: ^4.0.0
+
+
+  # --- Permissions ---
+  permission_handler: ^11.0.0
+
+  # --- Utilities ---
+  intl: ^0.20.0
+  collection: ^1.18.0
+  freezed_annotation: ^2.4.0
+  json_annotation: ^4.9.0
+  equatable: ^2.0.0
+  dartz: ^0.10.0
+  logger: ^2.0.0
+  package_info_plus: ^8.0.0
+  url_launcher: ^6.3.0
+  connectivity_plus: ^6.0.0
+  flutter_native_splash: ^2.4.0
+  pdfrx: ^2.4.5
+  wakelock_plus: ^1.3.3
+  syncfusion_flutter_pdf: ^33.2.13
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.0
+  riverpod_generator: ^2.6.0
+  drift_dev: ^2.21.0
+  freezed: ^2.5.0
+  json_serializable: ^6.9.0
+  mocktail: ^1.0.0
+  flutter_launcher_icons: ^0.14.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/icons/
+    - assets/illustrations/
+    - assets/fonts/
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icons/app_icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icons/app_icon_foreground.png"
+  min_sdk_android: 23
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  color_dark: "#0F1120"
+  image: "assets/icons/splash_logo.png"
+  android: true
+  ios: false
+  android_12:
+    image: "assets/icons/splash_logo.png"
+    color: "#FFFFFF"
+    icon_background_color: "#FFFFFF"

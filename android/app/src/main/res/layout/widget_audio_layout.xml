@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_audio_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg_audio"
+    android:padding="13dp">
+
+    <!-- Center Background: Glowing Neon Soundwave Vector Graphic -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="26dp"
+        android:layout_centerVertical="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_widget_soundwave"
+        android:contentDescription="Soundwave" />
+
+    <!-- Foreground Content Column -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <!-- Top: Pink Headphones + Audio Reader + TTS Narration -->
+        <ImageView
+            android:id="@+id/widget_audio_icon"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:src="@drawable/ic_widget_audio"
+            android:contentDescription="Headphones" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Audio Reader"
+            android:textColor="#FFFFFF"
+            android:textSize="13.5sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:text="TTS Narration"
+            android:textColor="#C084FC"
+            android:textSize="10sp" />
+
+        <!-- Media Player Controls Row -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/widget_action_audio_prev"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="6dp"
+                android:src="@drawable/ic_widget_prev"
+                android:contentDescription="Previous" />
+
+            <ImageView
+                android:id="@+id/widget_action_audio_play"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/widget_btn_play_glow"
+                android:padding="10dp"
+                android:src="@drawable/ic_widget_play"
+                android:contentDescription="Play Narration" />
+
+            <ImageView
+                android:id="@+id/widget_action_audio_next"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="6dp"
+                android:src="@drawable/ic_widget_next"
+                android:contentDescription="Next" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

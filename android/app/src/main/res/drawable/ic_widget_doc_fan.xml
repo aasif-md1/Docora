@@ -1,0 +1,49 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="90dp"
+    android:height="90dp"
+    android:viewportWidth="90"
+    android:viewportHeight="90">
+
+    <!-- Grid / Laser Horizon lines -->
+    <path
+        android:strokeColor="#2510B981"
+        android:strokeWidth="1"
+        android:pathData="M5,65 L85,65 M15,75 L75,75 M0,85 L90,85" />
+    <path
+        android:strokeColor="#1510B981"
+        android:strokeWidth="1"
+        android:pathData="M20,90 L35,60 M70,90 L55,60" />
+
+    <!-- Sheet 1 (Deepest Background) -->
+    <path
+        android:fillColor="#1810B981"
+        android:strokeColor="#4034D399"
+        android:strokeWidth="1"
+        android:pathData="M22,8 L58,4 L68,52 L32,56 Z" />
+
+    <!-- Sheet 2 (Middle) -->
+    <path
+        android:fillColor="#2210B981"
+        android:strokeColor="#6534D399"
+        android:strokeWidth="1.2"
+        android:pathData="M30,16 L66,12 L74,62 L38,66 Z" />
+    <!-- Lines on Sheet 2 -->
+    <path
+        android:strokeColor="#506EE7B7"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:pathData="M38,26 L60,24 M38,32 L56,30 M38,38 L62,36 M38,44 L54,42" />
+
+    <!-- Sheet 3 (Foreground Main) -->
+    <path
+        android:fillColor="#3210B981"
+        android:strokeColor="#9934D399"
+        android:strokeWidth="1.6"
+        android:pathData="M38,24 L76,24 L76,76 L38,76 Z" />
+    <!-- Lines & Code on Foreground Sheet -->
+    <path
+        android:strokeColor="#CC6EE7B7"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M44,32 L68,32 M44,38 L70,38 M44,44 L60,44 M44,50 L70,50 M44,56 L64,56 M44,62 L58,62 M44,68 L66,68" />
+</vector>

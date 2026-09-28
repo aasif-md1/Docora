@@ -1,0 +1,35 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="260dp"
+    android:height="36dp"
+    android:viewportWidth="260"
+    android:viewportHeight="36">
+
+    <!-- Baseline neon glow line -->
+    <path
+        android:strokeColor="#408B5CF6"
+        android:strokeWidth="1"
+        android:pathData="M0,18 L260,18" />
+
+    <!-- Waveform vertical bars with varying heights and neon colors -->
+    <path
+        android:strokeColor="#708B5CF6"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="
+            M10,16 L10,20 M18,14 L18,22 M26,10 L26,26 M34,7 L34,29 M42,12 L42,24
+            M50,15 L50,21 M58,9 L58,27 M66,5 L66,31 M74,11 L74,25 M82,14 L82,22
+            M90,8 L90,28 M98,4 L98,32 M106,10 L106,26 M114,15 L114,21 M122,7 L122,29
+            M130,12 L130,24 M138,6 L138,30 M146,14 L146,22 M154,8 L154,28 M162,3 L162,33
+            M170,11 L170,25 M178,15 L178,21 M186,7 L186,29 M194,5 L194,31 M202,12 L202,24
+            M210,9 L210,27 M218,14 L218,22 M226,6 L226,30 M234,10 L234,26 M242,15 L242,21
+            M250,17 L250,19" />
+
+    <!-- Magenta overlay peaks -->
+    <path
+        android:strokeColor="#CCEC4899"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="
+            M34,11 L34,25 M66,9 L66,27 M98,8 L98,28 M138,10 L138,26
+            M162,7 L162,29 M194,9 L194,27 M226,10 L226,26" />
+</vector>

@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Circular amber background -->
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M24,2A22,22 0,1 0,46,24,22,22 0,0 0,24,2Z" />
+    <!-- Folder shape -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14,16 C12.9,16 12,16.9 12,18 L12,30 C12,31.1 12.9,32 14,32 L34,32 C35.1,32 36,31.1 36,30 L36,22 C36,20.9 35.1,20 34,20 L25,20 L22,17 C21.4,16.4 20.6,16 19.8,16 L14,16 Z" />
+    <!-- Front flap -->
+    <path
+        android:fillColor="#FEF3C7"
+        android:pathData="M12,24 L15,32 L36,32 L33,24 Z" />
+</vector>

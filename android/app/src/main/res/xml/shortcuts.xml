@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="shortcut_scan"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_scan"
+        android:shortcutShortLabel="@string/shortcut_scan"
+        android:shortcutLongLabel="@string/shortcut_scan">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.docora.app"
+            android:targetClass="com.docora.app.MainActivity">
+            <extra android:name="route" android:value="/scanner" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_tools"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_tools"
+        android:shortcutShortLabel="@string/shortcut_tools"
+        android:shortcutLongLabel="@string/shortcut_tools">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.docora.app"
+            android:targetClass="com.docora.app.MainActivity">
+            <extra android:name="route" android:value="/tools" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_open"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_open"
+        android:shortcutShortLabel="@string/shortcut_open"
+        android:shortcutLongLabel="@string/shortcut_open">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.docora.app"
+            android:targetClass="com.docora.app.MainActivity">
+            <extra android:name="route" android:value="/files" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_vault"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_vault"
+        android:shortcutShortLabel="@string/shortcut_vault"
+        android:shortcutLongLabel="@string/shortcut_vault">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.docora.app"
+            android:targetClass="com.docora.app.MainActivity">
+            <extra android:name="route" android:value="/vault" />
+        </intent>
+    </shortcut>
+</shortcuts>

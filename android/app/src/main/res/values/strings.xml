@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Docora</string>
+    <string name="widget_scanner_name">Docora Instant Scanner</string>
+    <string name="widget_scanner_desc">1-Tap instant camera scanner &amp; document digitizer</string>
+    <string name="widget_tools_name">Docora Power Tools Hub</string>
+    <string name="widget_tools_desc">Direct shortcuts for Image to PDF, Merge, Watermark &amp; Compress</string>
+    <string name="widget_recent_name">Docora Resume Reading</string>
+    <string name="widget_recent_desc">Continue reading your last active book or presentation</string>
+    <string name="widget_vault_name">Docora Secure Vault</string>
+    <string name="widget_vault_desc">Biometric status and emergency lock shield</string>
+    <string name="widget_tracker_name">Docora Reading Tracker</string>
+    <string name="widget_tracker_desc">Daily reading goal, streak flames, and page stats</string>
+    <string name="widget_audio_name">Docora Audio Reader</string>
+    <string name="widget_audio_desc">Mini-player for hands-free text-to-speech narration</string>
+    <string name="shortcut_scan">Scan Document</string>
+    <string name="shortcut_open">Open File</string>
+    <string name="shortcut_tools">PDF Tools</string>
+    <string name="shortcut_vault">Private Vault</string>
+</resources>

@@ -1,0 +1,32 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="85dp"
+    android:height="85dp"
+    android:viewportWidth="85"
+    android:viewportHeight="85">
+
+    <!-- Sheet 1 (Back angled sheet) -->
+    <path
+        android:fillColor="#188B5CF6"
+        android:strokeColor="#45A78BFA"
+        android:strokeWidth="1"
+        android:pathData="M18,10 L56,4 L66,54 L28,60 Z" />
+
+    <!-- Sheet 2 (Foreground main sheet) -->
+    <path
+        android:fillColor="#2C8B5CF6"
+        android:strokeColor="#99C084FC"
+        android:strokeWidth="1.5"
+        android:pathData="M30,18 L68,18 L68,74 L30,74 Z" />
+
+    <!-- Text and headline lines on Sheet 2 -->
+    <path
+        android:strokeColor="#E0C084FC"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:pathData="M36,28 L56,28" />
+    <path
+        android:strokeColor="#99E9D5FF"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:pathData="M36,36 L62,36 M36,42 L58,42 M36,48 L64,48 M36,54 L52,54 M36,60 L62,60 M36,66 L56,66" />
+</vector>

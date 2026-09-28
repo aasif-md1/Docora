@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="44dp"
+    android:height="44dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M24,2A22,22 0,1 0,46,24,22,22 0,0 0,24,2Z" />
+    <!-- Open Book Vector -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M14,17 C17,15.5 21,15.5 24,18 C27,15.5 31,15.5 34,17 L34,31 C31,29.5 27,29.5 24,32 C21,29.5 17,29.5 14,31 L14,17 Z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:pathData="M24,18 L24,32" />
+</vector>
