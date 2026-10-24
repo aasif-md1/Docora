@@ -210,22 +210,31 @@ class _DocoraFabState extends State<_DocoraFab>
 
   late AnimationController _controller;
   late Animation<double> _rotateAnimation;
-  late Animation<double> _expandAnimation;
+  // Staggered animations for each mini FAB item (enter from bottom)
+  late List<Animation<double>> _itemAnimations;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 250),
+      duration: AppMotion.slow, // 300ms — modal-type interaction
       vsync: this,
     );
+    // Custom ease-in-out curve instead of weak default
     _rotateAnimation = Tween<double>(begin: 0, end: 0.125).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+      CurvedAnimation(parent: _controller, curve: AppMotion.standard),
     );
-    _expandAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    );
+    // Staggered intervals for each mini FAB (3 items)
+    _itemAnimations = List.generate(3, (index) {
+      // Items appear bottom-to-top: item 2 first, then 1, then 0
+      final reverseIndex = 2 - index;
+      final start = (reverseIndex * 0.15).clamp(0.0, 1.0);
+      final end = (start + 0.6).clamp(0.0, 1.0);
+      return CurvedAnimation(
+        parent: _controller,
+        curve: Interval(start, end, curve: AppMotion.enter),
+      );
+    });
   }
 
   @override
@@ -367,48 +376,88 @@ class _DocoraFabState extends State<_DocoraFab>
 
     final colorScheme = Theme.of(context).colorScheme;
 
+    final miniFabItems = [
+      _MiniFabItem(
+        icon: LucideIcons.scan_line,
+        label: 'Scan document',
+        onTap: () => _onScanDocument(context),
+      ),
+      _MiniFabItem(
+        icon: LucideIcons.file_plus,
+        label: 'Create new',
+        onTap: () => _onCreateNew(context),
+      ),
+      _MiniFabItem(
+        icon: LucideIcons.folder_open,
+        label: 'Open file',
+        onTap: () => _onOpenFile(context),
+      ),
+    ];
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        // Mini FAB items (visible when expanded)
-        ScaleTransition(
-          scale: _expandAnimation,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _MiniFabItem(
-                icon: LucideIcons.scan_line,
-                label: 'Scan document',
-                onTap: () => _onScanDocument(context),
+        // Staggered mini FAB items — only rendered when expanded/animating
+        AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            if (_controller.value == 0 && !_isExpanded) {
+              return const SizedBox.shrink();
+            }
+            return IgnorePointer(
+              ignoring: !_isExpanded,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  ...List.generate(miniFabItems.length, (index) {
+                    final value = _itemAnimations[index].value;
+                    return Opacity(
+                      opacity: value.clamp(0.0, 1.0),
+                      child: Transform.translate(
+                        offset: Offset(0, 12 * (1 - value)),
+                        child: Transform.scale(
+                          scale: AppMotion.enterScale +
+                              (1.0 - AppMotion.enterScale) * value,
+                          alignment: Alignment.bottomRight,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                            child: miniFabItems[index],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: AppSpacing.xs),
+                ],
               ),
-              const SizedBox(height: AppSpacing.sm),
-              _MiniFabItem(
-                icon: LucideIcons.file_plus,
-                label: 'Create new',
-                onTap: () => _onCreateNew(context),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              _MiniFabItem(
-                icon: LucideIcons.folder_open,
-                label: 'Open file',
-                onTap: () => _onOpenFile(context),
-              ),
-              const SizedBox(height: AppSpacing.md),
-            ],
-          ),
+            );
+          },
         ),
 
-        // Main FAB
-        FloatingActionButton(
-          onPressed: _toggle,
-          elevation: 4,
-          backgroundColor: colorScheme.primary,
-          foregroundColor: colorScheme.onPrimary,
-          tooltip: 'Open actions',
-          child: RotationTransition(
-            turns: _rotateAnimation,
-            child: const Icon(LucideIcons.plus, size: 24),
+        // Main FAB with gradient shadow
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.primary.withAlpha(40),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: FloatingActionButton(
+            onPressed: _toggle,
+            elevation: 2,
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
+            tooltip: 'Open actions',
+            child: RotationTransition(
+              turns: _rotateAnimation,
+              child: const Icon(LucideIcons.plus, size: 24),
+            ),
           ),
         ),
       ],

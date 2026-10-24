@@ -1,3 +1,4 @@
+import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_radius.dart';
 import 'package:docora/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,10 @@ enum DocoraButtonVariant { primary, secondary, outlined, ghost }
 
 enum DocoraButtonSize { small, medium, large }
 
-/// Standard button for Docora with haptics, loading states, and icon support.
-class DocoraButton extends StatelessWidget {
+/// Standard button for Docora with haptics, press-scale feedback, loading states, and icon support.
+/// Press-scale follows Emil Kowalski's philosophy: buttons must feel responsive
+/// with scale(0.97) on press, using 100-160ms ease-out curves.
+class DocoraButton extends StatefulWidget {
   const DocoraButton({
     required this.label,
     super.key,
@@ -29,6 +32,48 @@ class DocoraButton extends StatelessWidget {
   final bool isFullWidth;
 
   @override
+  State<DocoraButton> createState() => _DocoraButtonState();
+}
+
+class _DocoraButtonState extends State<DocoraButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _scaleController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleController = AnimationController(
+      duration: AppMotion.instant,
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: AppMotion.pressScale)
+        .animate(CurvedAnimation(
+      parent: _scaleController,
+      curve: AppMotion.enter,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails _) {
+    if (widget.onPressed == null || widget.isLoading) return;
+    _scaleController.forward();
+  }
+
+  void _onTapUp(TapUpDetails _) {
+    _scaleController.reverse();
+  }
+
+  void _onTapCancel() {
+    _scaleController.reverse();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -36,7 +81,7 @@ class DocoraButton extends StatelessWidget {
     final double fontSize;
     final EdgeInsets padding;
 
-    switch (size) {
+    switch (widget.size) {
       case DocoraButtonSize.small:
         height = 36;
         fontSize = 12;
@@ -52,27 +97,27 @@ class DocoraButton extends StatelessWidget {
     }
 
     final Widget content = Row(
-      mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+      mainAxisSize: widget.isFullWidth ? MainAxisSize.max : MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (isLoading) ...[
+        if (widget.isLoading) ...[
           SizedBox(
             width: fontSize + 2,
             height: fontSize + 2,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              color: variant == DocoraButtonVariant.primary
+              color: widget.variant == DocoraButtonVariant.primary
                   ? colorScheme.onPrimary
                   : colorScheme.primary,
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
-        ] else if (icon != null) ...[
-          Icon(icon, size: fontSize + 4),
+        ] else if (widget.icon != null) ...[
+          Icon(widget.icon, size: fontSize + 4),
           const SizedBox(width: AppSpacing.xs),
         ],
         Text(
-          label,
+          widget.label,
           style: TextStyle(
             fontSize: fontSize,
             fontWeight: FontWeight.w600,
@@ -82,10 +127,10 @@ class DocoraButton extends StatelessWidget {
     );
 
     VoidCallback? handleTap() {
-      if (onPressed == null || isLoading) return null;
+      if (widget.onPressed == null || widget.isLoading) return null;
       return () {
         HapticFeedback.lightImpact();
-        onPressed!();
+        widget.onPressed!();
       };
     }
 
@@ -94,12 +139,12 @@ class DocoraButton extends StatelessWidget {
     );
 
     Widget button;
-    switch (variant) {
+    switch (widget.variant) {
       case DocoraButtonVariant.primary:
         button = FilledButton(
           onPressed: handleTap(),
           style: FilledButton.styleFrom(
-            minimumSize: Size(isFullWidth ? double.infinity : 0, height),
+            minimumSize: Size(widget.isFullWidth ? double.infinity : 0, height),
             padding: padding,
             shape: shape,
           ),
@@ -109,7 +154,7 @@ class DocoraButton extends StatelessWidget {
         button = FilledButton.tonal(
           onPressed: handleTap(),
           style: FilledButton.styleFrom(
-            minimumSize: Size(isFullWidth ? double.infinity : 0, height),
+            minimumSize: Size(widget.isFullWidth ? double.infinity : 0, height),
             padding: padding,
             shape: shape,
           ),
@@ -119,7 +164,7 @@ class DocoraButton extends StatelessWidget {
         button = OutlinedButton(
           onPressed: handleTap(),
           style: OutlinedButton.styleFrom(
-            minimumSize: Size(isFullWidth ? double.infinity : 0, height),
+            minimumSize: Size(widget.isFullWidth ? double.infinity : 0, height),
             padding: padding,
             shape: shape,
             side: BorderSide(color: colorScheme.outline),
@@ -130,7 +175,7 @@ class DocoraButton extends StatelessWidget {
         button = TextButton(
           onPressed: handleTap(),
           style: TextButton.styleFrom(
-            minimumSize: Size(isFullWidth ? double.infinity : 0, height),
+            minimumSize: Size(widget.isFullWidth ? double.infinity : 0, height),
             padding: padding,
             shape: shape,
           ),
@@ -138,6 +183,18 @@ class DocoraButton extends StatelessWidget {
         );
     }
 
-    return button;
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: AnimatedBuilder(
+        animation: _scaleAnimation,
+        builder: (context, child) => Transform.scale(
+          scale: _scaleAnimation.value,
+          child: child,
+        ),
+        child: button,
+      ),
+    );
   }
 }

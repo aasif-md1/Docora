@@ -1,4 +1,5 @@
 import 'package:docora/core/theme/app_colors.dart';
+import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_radius.dart';
 import 'package:docora/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -239,13 +240,13 @@ class AppTheme {
         }),
       ),
 
-      // Cards
+      // Cards — semi-transparent borders (Emil Kowalski: use shadows over solid borders)
       cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
           side: BorderSide(
-            color: colorScheme.outline.withValues(alpha: 0.12),
+            color: colorScheme.outline.withValues(alpha: 0.08),
           ),
         ),
         color: colorScheme.surface,
