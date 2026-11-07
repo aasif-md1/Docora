@@ -64,6 +64,20 @@ class MainActivity : FlutterActivity() {
         flutterEngine?.navigationChannel?.popRoute()
     }
 
+    override fun onResume() {
+        super.onResume()
+        try {
+            DocoraWidgetUpdater.updateAll(this)
+        } catch (_: Exception) {}
+    }
+
+    override fun onPause() {
+        super.onPause()
+        try {
+            DocoraWidgetUpdater.updateAll(this)
+        } catch (_: Exception) {}
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
@@ -118,8 +132,7 @@ class MainActivity : FlutterActivity() {
                                 "tools_hub" -> DocoraToolsWidget::class.java
                                 "private_vault" -> DocoraVaultWidget::class.java
                                 "reading_tracker" -> DocoraReadingTrackerWidget::class.java
-                                "audio_reader" -> DocoraAudioReaderWidget::class.java
-                                else -> DocoraRecentWidget::class.java
+                                else -> DocoraScannerWidget::class.java
                             }
                             val component = android.content.ComponentName(this, providerClass)
                             if (appWidgetManager != null && appWidgetManager.isRequestPinAppWidgetSupported) {
@@ -133,6 +146,15 @@ class MainActivity : FlutterActivity() {
                             result.success(false)
                         }
                     } else {
+                        result.success(false)
+                    }
+                }
+                "updateAllWidgets" -> {
+                    try {
+                        DocoraWidgetUpdater.updateAll(this)
+                        result.success(true)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "updateAllWidgets error", e)
                         result.success(false)
                     }
                 }

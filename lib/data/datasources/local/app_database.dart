@@ -166,7 +166,11 @@ class AppDatabase extends _$AppDatabase {
         ),
       );
 
-  // ── Search History ─────────────────────────────────────────────────────────
+  Future<void> clearRecentHistory() async {
+    await delete(readingProgress).go();
+    await (update(documents)..where((d) => d.lastOpened.isNotNull()))
+        .write(const DocumentsCompanion(lastOpened: Value(null)));
+  }
 
   Stream<List<SearchHistoryData>> watchSearchHistory({int limit = 10}) =>
       (select(searchHistory)

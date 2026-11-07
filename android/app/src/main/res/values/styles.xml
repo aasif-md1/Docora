@@ -19,4 +19,49 @@
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">?android:colorBackground</item>
     </style>
+    <!-- ── Docora Widget Typography Styles ─────────────────────────────────── -->
+    <style name="WidgetTitle">
+        <item name="android:textSize">@dimen/widget_text_title</item>
+        <item name="android:textColor">@color/widget_text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingMultiplier">1.3</item>
+    </style>
+    <style name="WidgetCaption">
+        <item name="android:textSize">@dimen/widget_text_caption</item>
+        <item name="android:textColor">@color/widget_text_secondary</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingMultiplier">1.3</item>
+    </style>
+    <style name="WidgetButton">
+        <item name="android:textSize">@dimen/widget_text_btn</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="WidgetButtonOutlined">
+        <item name="android:textSize">@dimen/widget_text_btn</item>
+        <item name="android:textColor">@color/widget_accent</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="WidgetButtonContinue">
+        <item name="android:textSize">@dimen/widget_text_btn</item>
+        <item name="android:textColor">@color/widget_accent</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="WidgetIconLabel">
+        <item name="android:textSize">@dimen/widget_text_icon_label</item>
+        <item name="android:textColor">@color/widget_text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="WidgetPercentage">
+        <item name="android:textSize">@dimen/widget_text_caption</item>
+        <item name="android:textColor">@color/widget_accent</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
 </resources>

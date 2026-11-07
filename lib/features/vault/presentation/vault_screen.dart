@@ -4,7 +4,6 @@ import 'package:docora/core/theme/app_colors.dart';
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_spacing.dart';
 import 'package:docora/core/theme/format_helpers.dart';
-import 'package:docora/core/widgets/docora_button.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';

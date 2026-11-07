@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:docora/core/router/app_routes.dart';
+import 'package:docora/core/services/widget_sync.dart';
+import 'package:docora/core/theme/app_colors.dart';
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:go_router/go_router.dart';
 import 'package:docora/core/theme/app_spacing.dart';
@@ -137,6 +139,12 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
       await repo.updateDocumentPageCount(
         path: widget.filePath,
         pageCount: _totalPages,
+      );
+      WidgetSync.syncReadingProgress(
+        filePath: widget.filePath,
+        fileName: p.basename(widget.filePath),
+        currentPage: _currentPage,
+        totalPages: _totalPages,
       );
     } on Object catch (_) {}
   }
@@ -337,346 +345,432 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
         }
       },
       child: Scaffold(
-      backgroundColor: readingMode == PdfReadingMode.dark
-          ? Colors.black
-          : (readingMode == PdfReadingMode.sepia
-              ? const Color(0xFFFBF0D9)
-              : colorScheme.surface),
-      extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          // 1. PDF Viewer with optional ColorFilter and Layout
-          readingMode.colorFilter != null
-              ? ColorFiltered(
-                  colorFilter: readingMode.colorFilter!,
-                  child: _buildPdfViewer(colorScheme, readingMode, layoutMode),
-                )
-              : _buildPdfViewer(colorScheme, readingMode, layoutMode),
-
-          // 1.5. PDF Annotation Layer
-          PdfAnnotationLayer(
-            currentPage: _currentPage,
-            activeTool: _activeTool,
-            activeColor: _activeColor,
-            pageStrokes: _pageStrokes[_currentPage] ?? const [],
-            pageNotes: _pageNotes[_currentPage] ?? const [],
-            pageSignatures: _pageSignatures[_currentPage] ?? const [],
-            onStrokesUpdated: (updated) {
-              setState(() {
-                _pageStrokes[_currentPage] = updated;
-              });
-            },
-            onNotesUpdated: (updated) {
-              setState(() {
-                _pageNotes[_currentPage] = updated;
-              });
-            },
-            onSignaturesUpdated: (updated) {
-              setState(() {
-                _pageSignatures[_currentPage] = updated;
-              });
-            },
-          ),
-
-          // 2. Animated Top AppBar
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              bottom: false,
-              child: AnimatedSlide(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                offset: _isFullscreen ? const Offset(0, -1.2) : Offset.zero,
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 250),
-                  opacity: _isFullscreen ? 0.0 : 1.0,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surface.withValues(alpha: 0.95),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: AppBar(
-                      backgroundColor: Colors.transparent,
-                      surfaceTintColor: Colors.transparent,
-                      elevation: 0,
-                      leading: IconButton(
-                        icon: const Icon(LucideIcons.arrow_left),
-                        tooltip: 'Back',
-                        onPressed: () {
-                          if (Navigator.of(context).canPop()) {
-                            Navigator.of(context).pop();
-                          } else {
-                            context.go(AppRoutes.home);
-                          }
-                        },
-                      ),
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        fileName,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        'Page $_currentPage of $_totalPages',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    IconButton(
-                      icon: Icon(
-                        _isSearching ? LucideIcons.search_x : LucideIcons.search,
-                      ),
-                      tooltip: _isSearching ? 'Close search' : 'Search text',
-                      onPressed: () {
-                        setState(() {
-                          _isSearching = !_isSearching;
-                          if (_isSearching) {
-                            _ensureSearcher;
-                          } else {
-                            _searcher?.resetTextSearch();
-                          }
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        _isAnnotating ? LucideIcons.pen_line : LucideIcons.pencil,
-                        color: _isAnnotating ? colorScheme.primary : null,
-                      ),
-                      tooltip: _isAnnotating ? 'Close annotations' : 'Annotate PDF',
-                      onPressed: _toggleAnnotationMode,
-                    ),
-                    IconButton(
-                      icon: const Icon(LucideIcons.palette),
-                      tooltip: 'Reading mode',
-                      onPressed: _showReadingModeSheet,
-                    ),
-                    PopupMenuButton<String>(
-                      icon: const Icon(LucideIcons.ellipsis_vertical),
-                      tooltip: 'More options',
-                      onSelected: (val) {
-                        switch (val) {
-                          case 'outline':
-                            _showOutline();
-                          case 'info':
-                            _showInfoSheet();
-                          case 'wakelock':
-                            ref.read(pdfWakelockProvider.notifier).toggle();
-                          case 'layout':
-                            final nextLayout =
-                                layoutMode == PdfLayoutMode.verticalContinuous
-                                    ? PdfLayoutMode.horizontalSingle
-                                    : PdfLayoutMode.verticalContinuous;
-                            ref.read(pdfLayoutModeProvider.notifier).state =
-                                nextLayout;
-                            _pdfController.invalidate();
-                          case 'share':
-                            Share.shareXFiles(
-                              [XFile(widget.filePath)],
-                              text: fileName,
-                            );
-                          case 'open_external':
-                            OpenFile.open(widget.filePath);
-                        }
-                      },
-                      itemBuilder: (ctx) => [
-                        PopupMenuItem(
-                          value: 'outline',
-                          child: Row(
-                            children: [
-                              Icon(
-                                LucideIcons.list_tree,
-                                size: 20,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: AppSpacing.md),
-                              const Text('Table of Contents'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'wakelock',
-                          child: Row(
-                            children: [
-                              Icon(
-                                isWakelockActive
-                                    ? LucideIcons.eye
-                                    : LucideIcons.eye_off,
-                                size: 20,
-                                color: isWakelockActive
-                                    ? colorScheme.primary
-                                    : colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: AppSpacing.md),
-                              Text(isWakelockActive
-                                  ? 'Keep Screen Awake (On)'
-                                  : 'Keep Screen Awake (Off)'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'layout',
-                          child: Row(
-                            children: [
-                              Icon(
-                                layoutMode == PdfLayoutMode.verticalContinuous
-                                    ? LucideIcons.columns_2
-                                    : LucideIcons.rows_2,
-                                size: 20,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: AppSpacing.md),
-                              Text(layoutMode ==
-                                      PdfLayoutMode.verticalContinuous
-                                  ? 'Horizontal Flip Mode'
-                                  : 'Continuous Scroll Mode'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'info',
-                          child: Row(
-                            children: [
-                              Icon(
-                                LucideIcons.info,
-                                size: 20,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: AppSpacing.md),
-                              const Text('Document Info'),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuDivider(),
-                        PopupMenuItem(
-                          value: 'share',
-                          child: Row(
-                            children: [
-                              Icon(
-                                LucideIcons.share_2,
-                                size: 20,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: AppSpacing.md),
-                              const Text('Share Document'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'open_external',
-                          child: Row(
-                            children: [
-                              Icon(
-                                LucideIcons.external_link,
-                                size: 20,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: AppSpacing.md),
-                              const Text('Open in External App'),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+        backgroundColor: readingMode == PdfReadingMode.dark
+            ? const Color(0xFF16181D)
+            : (readingMode == PdfReadingMode.sepia
+                ? const Color(0xFFFBF0D9)
+                : AppColors.backgroundLight),
+        body: SafeArea(
+          top: !_isFullscreen,
+          bottom: !_isFullscreen,
+          child: Stack(
+            children: [
+              // ── Primary Document Content Area (Positioned below AppBar) ──
+              Positioned.fill(
+                top: _isFullscreen ? 0 : (_isSearching ? 120 : 64),
+                child: readingMode.colorFilter != null
+                    ? ColorFiltered(
+                        colorFilter: readingMode.colorFilter!,
+                        child: _buildPdfViewer(colorScheme, readingMode, layoutMode),
+                      )
+                    : _buildPdfViewer(colorScheme, readingMode, layoutMode),
               ),
-            ),
+
+              // ── PDF Annotation Layer (Matches document content area) ──
+              if (_isAnnotating)
+                Positioned.fill(
+                  top: _isFullscreen ? 0 : (_isSearching ? 120 : 64),
+                  child: PdfAnnotationLayer(
+                    currentPage: _currentPage,
+                    activeTool: _activeTool,
+                    activeColor: _activeColor,
+                    pageStrokes: _pageStrokes[_currentPage] ?? const [],
+                    pageNotes: _pageNotes[_currentPage] ?? const [],
+                    pageSignatures: _pageSignatures[_currentPage] ?? const [],
+                    onStrokesUpdated: (updated) {
+                      setState(() {
+                        _pageStrokes[_currentPage] = updated;
+                      });
+                    },
+                    onNotesUpdated: (updated) {
+                      setState(() {
+                        _pageNotes[_currentPage] = updated;
+                      });
+                    },
+                    onSignaturesUpdated: (updated) {
+                      setState(() {
+                        _pageSignatures[_currentPage] = updated;
+                      });
+                    },
+                  ),
+                ),
+
+              // ── Minimal Top App Bar (Word Viewer matching) ──
+              if (!_isFullscreen)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      border: Border(
+                        bottom: BorderSide(
+                          color: colorScheme.outline.withAlpha(50),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(LucideIcons.arrow_left, size: 22),
+                            tooltip: 'Back',
+                            onPressed: () {
+                              if (Navigator.of(context).canPop()) {
+                                Navigator.of(context).pop();
+                              } else {
+                                context.go(AppRoutes.home);
+                              }
+                            },
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  fileName,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if (_totalPages > 1)
+                                  Text(
+                                    'Page $_currentPage of $_totalPages',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              _isSearching ? LucideIcons.x : LucideIcons.search,
+                              size: 20,
+                            ),
+                            tooltip: 'Search',
+                            onPressed: () {
+                              setState(() {
+                                _isSearching = !_isSearching;
+                                if (_isSearching) {
+                                  _ensureSearcher;
+                                } else {
+                                  _searcher?.resetTextSearch();
+                                }
+                              });
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              readingMode == PdfReadingMode.dark
+                                  ? LucideIcons.sun
+                                  : LucideIcons.moon,
+                              size: 20,
+                            ),
+                            tooltip: 'Night mode',
+                            onPressed: () {
+                              final nextMode = readingMode == PdfReadingMode.dark
+                                  ? PdfReadingMode.normal
+                                  : PdfReadingMode.dark;
+                              ref.read(pdfReadingModeProvider.notifier).state = nextMode;
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              _isAnnotating ? LucideIcons.pen_line : LucideIcons.pencil,
+                              size: 20,
+                              color: _isAnnotating ? colorScheme.primary : null,
+                            ),
+                            tooltip: _isAnnotating ? 'Close annotations' : 'Annotate PDF',
+                            onPressed: _toggleAnnotationMode,
+                          ),
+                          PopupMenuButton<String>(
+                            icon: const Icon(LucideIcons.ellipsis_vertical, size: 20),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            onSelected: (val) async {
+                              switch (val) {
+                                case 'fullscreen':
+                                  _toggleFullscreen();
+                                case 'goto':
+                                  _jumpToPage();
+                                case 'outline':
+                                  _showOutline();
+                                case 'palette':
+                                  _showReadingModeSheet();
+                                case 'layout':
+                                  final nextLayout =
+                                      layoutMode == PdfLayoutMode.verticalContinuous
+                                          ? PdfLayoutMode.horizontalSingle
+                                          : PdfLayoutMode.verticalContinuous;
+                                  ref.read(pdfLayoutModeProvider.notifier).state =
+                                      nextLayout;
+                                  _pdfController.invalidate();
+                                case 'wakelock':
+                                  ref.read(pdfWakelockProvider.notifier).toggle();
+                                case 'info':
+                                  _showInfoSheet();
+                                case 'share':
+                                  await Share.shareXFiles(
+                                    [XFile(widget.filePath)],
+                                    text: fileName,
+                                  );
+                                case 'open_external':
+                                  await OpenFile.open(widget.filePath);
+                              }
+                            },
+                            itemBuilder: (ctx) => [
+                              const PopupMenuItem(
+                                value: 'fullscreen',
+                                child: Row(
+                                  children: [
+                                    Icon(LucideIcons.maximize, size: 18),
+                                    SizedBox(width: 12),
+                                    Text('Full Screen'),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuItem(
+                                value: 'goto',
+                                child: Row(
+                                  children: [
+                                    Icon(LucideIcons.corner_down_right, size: 18),
+                                    SizedBox(width: 12),
+                                    Text('Go to Page'),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuItem(
+                                value: 'outline',
+                                child: Row(
+                                  children: [
+                                    Icon(LucideIcons.list_tree, size: 18),
+                                    SizedBox(width: 12),
+                                    Text('Table of Contents'),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuItem(
+                                value: 'palette',
+                                child: Row(
+                                  children: [
+                                    Icon(LucideIcons.palette, size: 18),
+                                    SizedBox(width: 12),
+                                    Text('Reading Mode (Sepia / Invert)'),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'layout',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      layoutMode == PdfLayoutMode.verticalContinuous
+                                          ? LucideIcons.columns_2
+                                          : LucideIcons.rows_2,
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      layoutMode == PdfLayoutMode.verticalContinuous
+                                          ? 'Horizontal Flip Mode'
+                                          : 'Continuous Scroll Mode',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'wakelock',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      isWakelockActive
+                                          ? LucideIcons.eye
+                                          : LucideIcons.eye_off,
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      isWakelockActive
+                                          ? 'Screen Awake (On)'
+                                          : 'Screen Awake (Off)',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuItem(
+                                value: 'info',
+                                child: Row(
+                                  children: [
+                                    Icon(LucideIcons.info, size: 18),
+                                    SizedBox(width: 12),
+                                    Text('Document Info'),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuDivider(),
+                              const PopupMenuItem(
+                                value: 'share',
+                                child: Row(
+                                  children: [
+                                    Icon(LucideIcons.share_2, size: 18),
+                                    SizedBox(width: 12),
+                                    Text('Share Document'),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuItem(
+                                value: 'open_external',
+                                child: Row(
+                                  children: [
+                                    Icon(LucideIcons.external_link, size: 18),
+                                    SizedBox(width: 12),
+                                    Text('Open in External App'),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+              // ── In-Document Search Bar ──
+              if (_isSearching && !_isFullscreen)
+                Positioned(
+                  top: 64,
+                  left: 0,
+                  right: 0,
+                  child: PdfSearchBarWidget(
+                    searcher: _ensureSearcher,
+                    onClose: () {
+                      setState(() => _isSearching = false);
+                    },
+                  ),
+                ),
+
+              // ── Floating Page Pill (Word Viewer matching) ──
+              if (_totalPages > 1 && !_isFullscreen)
+                Positioned(
+                  bottom: 24,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: _jumpToPage,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surface.withAlpha(235),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: colorScheme.outline.withAlpha(80),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withAlpha(20),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              LucideIcons.file_text,
+                              size: 14,
+                              color: colorScheme.primary,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '$_currentPage / $_totalPages',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+              // ── PDF Annotation Toolbar ──
+              if (_isAnnotating && !_isFullscreen)
+                Positioned(
+                  bottom: AppSpacing.xl,
+                  left: 20,
+                  right: 20,
+                  child: Center(
+                    child: PdfAnnotationToolbar(
+                      activeTool: _activeTool,
+                      activeColor: _activeColor,
+                      onToolChanged: (tool) => setState(() => _activeTool = tool),
+                      onColorChanged: (c) => setState(() => _activeColor = c),
+                      onUndo: _undoAnnotation,
+                      onClearPage: _clearPageAnnotations,
+                      onAddSignature: _addSignature,
+                      onClose: _toggleAnnotationMode,
+                    ),
+                  ),
+                ),
+
+              // ── Floating Exit-Fullscreen Button ──
+              if (_isFullscreen)
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: _toggleFullscreen,
+                      borderRadius: BorderRadius.circular(24),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surface.withAlpha(210),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withAlpha(40),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          LucideIcons.minimize_2,
+                          size: 20,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
-
-          // 3. In-Document Search Bar
-          if (_isSearching && !_isFullscreen)
-            Positioned(
-              top: kToolbarHeight + MediaQuery.of(context).padding.top,
-              left: 0,
-              right: 0,
-              child: PdfSearchBarWidget(
-                searcher: _ensureSearcher,
-                onClose: () {
-                  setState(() => _isSearching = false);
-                },
-              ),
-            ),
-
-          // 4. Bottom Page Scrubber & Filmstrip
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: AnimatedSlide(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut,
-              offset: (_isFullscreen || _isSearching)
-                  ? const Offset(0, 1.2)
-                  : Offset.zero,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 250),
-                opacity: (_isFullscreen || _isSearching) ? 0.0 : 1.0,
-                child: PdfBottomScrubber(
-                  currentPage: _currentPage,
-                  totalPages: _totalPages,
-                  currentZoom: _currentZoom,
-                  onPageScrub: (page) {
-                    _pdfController.goToPage(pageNumber: page);
-                  },
-                  onJumpTap: _jumpToPage,
-                  onZoomIn: () {
-                    _pdfController.zoomUp();
-                  },
-                  onZoomOut: () {
-                    _pdfController.zoomDown();
-                  },
-                  onResetZoom: () {
-                    _pdfController.calcMatrixFitWidthForPage(pageNumber: _currentPage);
-                  },
-                ),
-              ),
-            ),
-          ),
-
-          // 5. PDF Annotation Toolbar
-          if (_isAnnotating && !_isFullscreen)
-            Positioned(
-              bottom: AppSpacing.xl,
-              left: 20,
-              right: 20,
-              child: Center(
-                child: PdfAnnotationToolbar(
-                  activeTool: _activeTool,
-                  activeColor: _activeColor,
-                  onToolChanged: (tool) => setState(() => _activeTool = tool),
-                  onColorChanged: (c) => setState(() => _activeColor = c),
-                  onUndo: _undoAnnotation,
-                  onClearPage: _clearPageAnnotations,
-                  onAddSignature: _addSignature,
-                  onClose: _toggleAnnotationMode,
-                ),
-              ),
-            ),
-        ],
-      ),
-    ));
+    );
   }
 
   Widget _buildPdfViewer(
@@ -694,10 +788,11 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
       },
       params: PdfViewerParams(
         backgroundColor: readingMode == PdfReadingMode.dark
-            ? Colors.black
+            ? const Color(0xFF16181D)
             : (readingMode == PdfReadingMode.sepia
                 ? const Color(0xFFFBF0D9)
-                : colorScheme.surfaceContainerLow),
+                : const Color(0xFFF2F4F7)),
+        margin: 12.0,
         loadingBannerBuilder: (context, bytesDownloaded, totalBytes) => const Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -761,7 +856,9 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
             behavior: HitTestBehavior.translucent,
             onTapUp: (details) {
               handleLinkTap(details.localPosition);
-              _toggleFullscreen();
+              if (_isFullscreen) {
+                _toggleFullscreen();
+              }
             },
           ),
         ],

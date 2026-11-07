@@ -239,7 +239,9 @@ class PdfToolsService {
     required String outputPath,
   }) async {
     final inFile = File(inputPath);
-    final bytes = await inFile.readAsBytes();
+    if (!await inFile.exists()) {
+      throw FileSystemException('Source PDF file not found', inputPath);
+    }
 
     // Re-encoding through compressed document buffers
     final doc = pw.Document(deflate: zlib.encode);

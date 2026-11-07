@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#FFFFFF</color>
+
+    <!-- Docora Clean Design System — Brand Accent -->
+    <color name="widget_accent">#4F6BED</color>
+    <color name="widget_accent_container">#E8ECFD</color>
+    <color name="widget_accent_ripple">#144F6BED</color>
+
+    <!-- Light Theme Palette (Widgets stay dark gradient with light text) -->
+    <color name="widget_bg">#16181D</color>
+    <color name="widget_surface_variant">#22252C</color>
+    <color name="widget_text_primary">#F2F4F7</color>
+    <color name="widget_text_secondary">#98A2B3</color>
+    <color name="widget_border">#24FFFFFF</color>
 </resources>

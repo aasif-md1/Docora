@@ -14,6 +14,9 @@
       ══════════════════════════════════════════════════════════════════════
     -->
 
+    <!-- Local loopback server for offline document viewer rendering -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <!-- Android 11+ (API 30+): All files access for offline document manager -->
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
@@ -55,6 +58,8 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
+        android:extractNativeLibs="true"
+        android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="false"
         android:allowBackup="false"
         android:fullBackupContent="false"
@@ -328,18 +333,6 @@
         </receiver>
 
         <receiver
-            android:name=".DocoraRecentWidget"
-            android:label="@string/widget_recent_name"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/docora_widget_recent" />
-        </receiver>
-
-        <receiver
             android:name=".DocoraVaultWidget"
             android:label="@string/widget_vault_name"
             android:exported="true">
@@ -361,18 +354,6 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/docora_widget_tracker" />
-        </receiver>
-
-        <receiver
-            android:name=".DocoraAudioReaderWidget"
-            android:label="@string/widget_audio_name"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/docora_widget_audio" />
         </receiver>
 
     </application>

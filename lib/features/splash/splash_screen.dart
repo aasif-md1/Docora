@@ -113,19 +113,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Logo placeholder — replaced with actual SVG in Phase 2
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      gradient: AppColors.brandGradient,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(
-                      Icons.description_rounded,
-                      color: Colors.white,
-                      size: 44,
-                    ),
+                  // Docora Transparent Brand Logo
+                  Image.asset(
+                    'assets/icons/splash_logo.png',
+                    width: 96,
+                    height: 96,
+                    fit: BoxFit.contain,
                   ),
                   const SizedBox(height: 20),
                   Text(

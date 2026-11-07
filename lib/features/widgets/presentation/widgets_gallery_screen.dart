@@ -543,16 +543,12 @@ class _WidgetsGalleryScreenState extends State<WidgetsGalleryScreen> {
     switch (widget.id) {
       case 'quick_scanner':
         return _buildScannerWidgetPreview();
-      case 'recent_reading':
-        return _buildRecentReadingWidgetPreview();
       case 'tools_hub':
         return _buildToolsHubWidgetPreview();
       case 'private_vault':
         return _buildVaultWidgetPreview();
       case 'reading_tracker':
         return _buildReadingTrackerWidgetPreview();
-      case 'audio_reader':
-        return _buildAudioReaderWidgetPreview();
       default:
         return const SizedBox.shrink();
     }

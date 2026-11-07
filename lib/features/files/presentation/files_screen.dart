@@ -1,4 +1,3 @@
-import 'package:docora/core/router/app_routes.dart';
 import 'package:docora/core/services/document_opener.dart';
 import 'package:docora/core/services/storage_permission_service.dart';
 import 'package:docora/core/theme/app_motion.dart';
@@ -10,11 +9,9 @@ import 'package:docora/features/files/presentation/providers/files_providers.dar
 import 'package:docora/features/files/presentation/widgets/file_details_dialog.dart';
 import 'package:docora/features/files/presentation/widgets/rename_dialog.dart';
 import 'package:docora/features/files/presentation/widgets/sort_bottom_sheet.dart';
-import 'package:docora/features/viewer/domain/models/text_document_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:open_file/open_file.dart';
 import 'package:share_plus/share_plus.dart';
 

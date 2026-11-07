@@ -18,7 +18,13 @@ abstract final class AppSpacing {
   static const double xxxl = 48;
 
   /// Standard horizontal page padding
-  static const double pagePadding = 16;
+  static const double pagePadding = 20;
+
+  /// Standard card internal padding
+  static const double cardPadding = 16;
+
+  /// Standard section spacing
+  static const double sectionSpacing = 24;
 
   /// Minimum tap target size per accessibility guidelines (48dp)
   static const double minTapTarget = 48;

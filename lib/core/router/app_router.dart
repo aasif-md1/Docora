@@ -6,6 +6,8 @@ import 'package:docora/features/files/presentation/files_screen.dart';
 import 'package:docora/features/home/presentation/home_screen.dart';
 import 'package:docora/features/onboarding/onboarding_screen.dart';
 import 'package:docora/features/search/presentation/search_screen.dart';
+import 'package:docora/features/settings/presentation/privacy_policy_screen.dart';
+import 'package:docora/features/settings/presentation/terms_conditions_screen.dart';
 import 'package:docora/features/settings/presentation/settings_screen.dart';
 import 'package:docora/features/splash/splash_screen.dart';
 import 'package:docora/features/files/presentation/recycle_bin_screen.dart';
@@ -49,12 +51,13 @@ final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
         WidgetsBinding.instance.addPostFrameCallback((_) {
           DocumentOpener.open(path);
         });
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
       }
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return _RouterErrorScreen(error: state.error);
     },
     redirect: (context, state) => null,
     routes: [
@@ -353,6 +356,20 @@ final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
           fallbackRoute: AppRoutes.tools,
           child: CompressPdfScreen(),
         ),
+      ),
+
+      // Privacy Policy
+      GoRoute(
+        path: AppRoutes.privacyPolicy,
+        name: 'privacy_policy',
+        builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+
+      // Terms & Conditions
+      GoRoute(
+        path: AppRoutes.termsConditions,
+        name: 'terms_conditions',
+        builder: (context, state) => const TermsConditionsScreen(),
       ),
     ],
   ));

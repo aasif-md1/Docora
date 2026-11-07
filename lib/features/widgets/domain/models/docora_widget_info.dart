@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:docora/core/router/app_routes.dart';
+import 'package:docora/core/theme/app_colors.dart';
 
 enum WidgetCategory {
   all('All'),
@@ -74,36 +75,8 @@ class DocoraWidgetModel {
           icon: LucideIcons.copy,
         ),
       ],
-      accentColor: Color(0xFF6366F1),
+      accentColor: AppColors.primary,
       targetRoute: AppRoutes.scanner,
-    ),
-    DocoraWidgetModel(
-      id: 'recent_reading',
-      name: 'Recent Documents & Reading Carousel',
-      subtitle: 'Live progress, recent files & 1-tap resume',
-      gridSize: '4x2',
-      category: WidgetCategory.reading,
-      description:
-          'Track your ongoing reading progress right on your phone home screen. Shows current book/presentation thumbnails, read percentages, and lets you jump back to your exact page in 1 tap.',
-      capabilities: [
-        WidgetFeatureCapability(
-          title: '1-Tap Resume Reading',
-          description: 'Directly opens your last active document at the exact page you paused at.',
-          icon: LucideIcons.book_open,
-        ),
-        WidgetFeatureCapability(
-          title: 'Live Reading Progress',
-          description: 'Visual progress bar showing completed percentage and remaining pages.',
-          icon: LucideIcons.layers,
-        ),
-        WidgetFeatureCapability(
-          title: 'Recent Files Quick Access',
-          description: 'Scroll through your 5 most recently viewed presentations, PDFs, and docs.',
-          icon: LucideIcons.clock,
-        ),
-      ],
-      accentColor: Color(0xFF0EA5E9),
-      targetRoute: AppRoutes.home,
     ),
     DocoraWidgetModel(
       id: 'tools_hub',
@@ -135,7 +108,7 @@ class DocoraWidgetModel {
           icon: LucideIcons.archive,
         ),
       ],
-      accentColor: Color(0xFF8B5CF6),
+      accentColor: AppColors.primary,
       targetRoute: AppRoutes.tools,
     ),
     DocoraWidgetModel(
@@ -163,7 +136,7 @@ class DocoraWidgetModel {
           icon: LucideIcons.key_round,
         ),
       ],
-      accentColor: Color(0xFFEF4444),
+      accentColor: AppColors.primary,
       targetRoute: AppRoutes.vault,
     ),
     DocoraWidgetModel(
@@ -191,35 +164,7 @@ class DocoraWidgetModel {
           icon: LucideIcons.award,
         ),
       ],
-      accentColor: Color(0xFFF59E0B),
-      targetRoute: AppRoutes.home,
-    ),
-    DocoraWidgetModel(
-      id: 'audio_reader',
-      name: 'TTS Audio Reader Mini-Player',
-      subtitle: 'Listen to slides & PDFs hands-free',
-      gridSize: '4x2',
-      category: WidgetCategory.media,
-      description:
-          'Control hands-free Text-to-Speech narration right from your home screen. Play, pause, skip paragraphs, and adjust narration speed while multitasking or commuting.',
-      capabilities: [
-        WidgetFeatureCapability(
-          title: 'Play / Pause Controls',
-          description: 'Instant playback toggle for the document currently being read aloud.',
-          icon: LucideIcons.play,
-        ),
-        WidgetFeatureCapability(
-          title: 'Speed Controller (1x - 2x)',
-          description: 'Toggle speech speed between normal, 1.25x, 1.5x, and 2.0x speeds.',
-          icon: LucideIcons.gauge,
-        ),
-        WidgetFeatureCapability(
-          title: '15s Seek & Paragraph Jump',
-          description: 'Quickly rewind or skip forward through lecture slides and dense pages.',
-          icon: LucideIcons.fast_forward,
-        ),
-      ],
-      accentColor: Color(0xFF10B981),
+      accentColor: AppColors.primary,
       targetRoute: AppRoutes.home,
     ),
   ];

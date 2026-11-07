@@ -30,4 +30,6 @@ abstract final class AppRoutes {
   static const String splitPdf = '/tools/split-pdf';
   static const String watermarkPdf = '/tools/watermark';
   static const String compressPdf = '/tools/compress';
+  static const String privacyPolicy = '/settings/privacy';
+  static const String termsConditions = '/settings/terms';
 }

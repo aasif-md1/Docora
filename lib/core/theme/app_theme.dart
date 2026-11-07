@@ -1,5 +1,6 @@
+import 'dart:async';
+import 'package:docora/core/services/widget_sync.dart';
 import 'package:docora/core/theme/app_colors.dart';
-import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_radius.dart';
 import 'package:docora/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +85,9 @@ class AccentColorIndexNotifier extends StateNotifier<int> {
       final saved = prefs.getInt(_kAccentIndexKey);
       if (saved != null && saved >= 0 && saved < AppColors.accentOptions.length) {
         state = saved;
+        unawaited(WidgetSync.syncAccentColor(saved));
+      } else {
+        unawaited(WidgetSync.syncAccentColor(0));
       }
     } catch (_) {}
   }
@@ -94,6 +98,7 @@ class AccentColorIndexNotifier extends StateNotifier<int> {
       try {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setInt(_kAccentIndexKey, index);
+        unawaited(WidgetSync.syncAccentColor(index));
       } catch (_) {}
     }
   }
@@ -132,79 +137,86 @@ class AppTheme {
   // ── Typography ─────────────────────────────────────────────────────────────
 
   static TextTheme get _textTheme => const TextTheme(
-        displayLarge: TextStyle(fontSize: 57, fontWeight: FontWeight.w400, letterSpacing: -0.25),
-        displayMedium: TextStyle(fontSize: 45, fontWeight: FontWeight.w400),
-        displaySmall: TextStyle(fontSize: 36, fontWeight: FontWeight.w400),
-        headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w700),
-        headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
-        headlineSmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-        titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-        titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 0.15),
-        titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, letterSpacing: 0.1),
-        bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, letterSpacing: 0.5),
-        bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, letterSpacing: 0.25),
-        bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, letterSpacing: 0.4),
-        labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, letterSpacing: 0.1),
-        labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, letterSpacing: 0.5),
-        labelSmall: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, letterSpacing: 0.5),
+        displayLarge: TextStyle(fontSize: 48, fontWeight: FontWeight.w700, letterSpacing: -0.25),
+        displayMedium: TextStyle(fontSize: 36, fontWeight: FontWeight.w700),
+        displaySmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+        headlineLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
+        headlineMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.w600), // Screen title: 24px Semibold
+        headlineSmall: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        titleMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.w600), // Section heading: 18px Semibold
+        titleSmall: TextStyle(fontSize: 16, fontWeight: FontWeight.w500), // Card title: 16px Medium
+        bodyLarge: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, letterSpacing: 0.2),
+        bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400), // Body: 14px Regular
+        bodySmall: TextStyle(fontSize: 13, fontWeight: FontWeight.w400), // Secondary: 13px Regular
+        labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600), // Button: 14-16px Semibold
+        labelMedium: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+        labelSmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w400), // Caption: 12px Regular
       );
 
   // ── Light Theme ─────────────────────────────────────────────────────────────
 
   ThemeData get light {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: accent,
+    final colorScheme = ColorScheme.light(
       primary: accent,
       onPrimary: Colors.white,
-      secondary: AppColors.accentTeal,
+      primaryContainer: accent.withValues(alpha: 0.12),
+      onPrimaryContainer: accent,
+      secondary: accent,
       onSecondary: Colors.white,
       surface: AppColors.surfaceLight,
-      onSurface: AppColors.onSurfaceLight,
-      error: AppColors.errorRed,
+      onSurface: AppColors.primaryText,
+      error: AppColors.error,
+      onError: Colors.white,
+      outline: AppColors.borderLight,
+      outlineVariant: AppColors.disabled,
     ).copyWith(
       surfaceContainerHighest: AppColors.surfaceVariantLight,
-      outline: AppColors.outlineLight,
     );
 
-    return _buildThemeData(colorScheme, Brightness.light);
+    return _buildThemeData(colorScheme, Brightness.light, AppColors.backgroundLight);
   }
 
   // ── Dark Theme ──────────────────────────────────────────────────────────────
 
   ThemeData get dark {
     final surface = isAmoled ? AppColors.surfaceAmoled : AppColors.surfaceDark;
+    final bg = isAmoled ? AppColors.backgroundAmoled : AppColors.backgroundDark;
 
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: accent,
-      brightness: Brightness.dark,
+    final colorScheme = ColorScheme.dark(
       primary: accent,
       onPrimary: Colors.white,
-      secondary: AppColors.accentTeal,
+      primaryContainer: accent.withValues(alpha: 0.25),
+      onPrimaryContainer: Colors.white,
+      secondary: accent,
       onSecondary: Colors.white,
       surface: surface,
-      onSurface: AppColors.onSurfaceDark,
+      onSurface: AppColors.primaryTextDark,
       error: AppColors.errorRedDark,
+      onError: Colors.white,
+      outline: AppColors.borderDark,
     ).copyWith(
       surfaceContainerHighest: isAmoled
           ? AppColors.surfaceVariantAmoled
-          : AppColors.surfaceVariantDark,
-      outline: AppColors.outlineDark,
+          : AppColors.surfaceElevatedDark,
     );
 
-    return _buildThemeData(colorScheme, Brightness.dark);
+    return _buildThemeData(colorScheme, Brightness.dark, bg);
   }
 
   // ── Shared Build Logic ──────────────────────────────────────────────────────
 
-  ThemeData _buildThemeData(ColorScheme colorScheme, Brightness brightness) {
+  ThemeData _buildThemeData(ColorScheme colorScheme, Brightness brightness, Color scaffoldBg) {
     final isLight = brightness == Brightness.light;
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      scaffoldBackgroundColor: scaffoldBg,
       textTheme: _textTheme.apply(
         bodyColor: colorScheme.onSurface,
         displayColor: colorScheme.onSurface,
+        fontFamilyFallback: const ['Inter', 'Roboto', 'sans-serif'],
       ),
 
       // App bar
@@ -219,7 +231,7 @@ class AppTheme {
             : SystemUiOverlayStyle.light,
         titleTextStyle: TextStyle(
           fontSize: 20,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
           color: colorScheme.onSurface,
         ),
       ),
@@ -256,7 +268,7 @@ class AppTheme {
       // Buttons
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(AppSpacing.xl * 2), // 48dp
+          minimumSize: const Size(64, AppSpacing.xl * 2), // 48dp height
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
@@ -269,7 +281,7 @@ class AppTheme {
 
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size.fromHeight(AppSpacing.xl * 2),
+          minimumSize: const Size(64, AppSpacing.xl * 2),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),

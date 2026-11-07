@@ -3,83 +3,59 @@
     android:id="@+id/widget_vault_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_bg_vault"
-    android:padding="14dp"
+    android:background="@drawable/widget_bg_card"
+    android:padding="@dimen/widget_space_16"
     android:orientation="vertical">
 
-    <!-- Top Row: Shield + Titles + Lock Circle -->
+    <!-- Top: 40dp Dynamic Accent-Container Circle with Lock Icon -->
+    <ImageView
+        android:id="@+id/widget_action_vault"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:contentDescription="Vault" />
+
+    <!-- Spacer to push content to bottom -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/widget_vault_icon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_shortcut_vault"
-            android:contentDescription="Private Vault" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="10dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Secure Vault"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Your files, your privacy"
-                android:textColor="#94A3B8"
-                android:textSize="10.5sp" />
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/widget_action_vault"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@drawable/widget_circle_lock"
-            android:padding="7dp"
-            android:src="@drawable/ic_widget_lock"
-            android:contentDescription="Unlock Vault" />
-    </LinearLayout>
-
-    <!-- Bottom Real Dynamic Storage Section -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="bottom"
         android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Private Vault"
+            style="@style/WidgetTitle" />
+
+        <TextView
+            android:id="@+id/widget_vault_count_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Confidential Storage"
+            style="@style/WidgetCaption" />
+
+        <!-- 6dp Dynamic Accent Progress Bar Image -->
+        <ImageView
+            android:id="@+id/widget_vault_progress_image"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_marginTop="@dimen/widget_space_8"
+            android:scaleType="fitXY"
+            android:contentDescription="Storage Usage" />
 
         <TextView
             android:id="@+id/widget_vault_storage_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Checking storage..."
-            android:textColor="#E2E8F0"
-            android:textSize="11.5sp"
-            android:textStyle="bold" />
-
-        <ProgressBar
-            android:id="@+id/widget_vault_progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:layout_marginTop="6dp"
-            android:max="100"
-            android:progress="35"
-            android:progressDrawable="@drawable/widget_pb_vault" />
+            android:layout_marginTop="@dimen/widget_space_4"
+            android:text="Tap to lock &amp; view files"
+            style="@style/WidgetCaption" />
     </LinearLayout>
+
 </LinearLayout>

@@ -29,7 +29,6 @@ class _ArchiveViewerScreenState extends State<ArchiveViewerScreen> {
   String? _errorMessage;
   List<ArchiveFile> _entries = [];
   bool _isExtracting = false;
-  String? _extractedDirPath;
 
   @override
   void initState() {
@@ -98,7 +97,6 @@ class _ArchiveViewerScreenState extends State<ArchiveViewerScreen> {
 
       setState(() {
         _isExtracting = false;
-        _extractedDirPath = outDir.path;
       });
 
       if (mounted) {

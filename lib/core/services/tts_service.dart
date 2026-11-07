@@ -1,4 +1,5 @@
 import 'package:docora/core/services/logger_service.dart';
+import 'package:docora/core/services/widget_sync.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -24,30 +25,51 @@ class TtsService extends ChangeNotifier {
   bool get isPlaying => _state == TtsState.playing;
   bool get isPaused => _state == TtsState.paused;
   double get rate => _rate;
+  int get currentWordStart => _currentWordStart;
+  int get currentWordEnd => _currentWordEnd;
+
+  String _currentTitle = 'Document';
 
   Future<void> _initTts() async {
     _flutterTts.setStartHandler(() {
       _state = TtsState.playing;
+      WidgetSync.syncTtsState(
+        fileName: _currentTitle,
+        isPlaying: true,
+        progress: 0.1,
+      );
       notifyListeners();
     });
 
     _flutterTts.setCompletionHandler(() {
       _state = TtsState.stopped;
+      WidgetSync.resetTtsState();
       notifyListeners();
     });
 
     _flutterTts.setCancelHandler(() {
       _state = TtsState.stopped;
+      WidgetSync.resetTtsState();
       notifyListeners();
     });
 
     _flutterTts.setPauseHandler(() {
       _state = TtsState.paused;
+      WidgetSync.syncTtsState(
+        fileName: _currentTitle,
+        isPlaying: false,
+        progress: 0.5,
+      );
       notifyListeners();
     });
 
     _flutterTts.setContinueHandler(() {
       _state = TtsState.playing;
+      WidgetSync.syncTtsState(
+        fileName: _currentTitle,
+        isPlaying: true,
+        progress: 0.5,
+      );
       notifyListeners();
     });
 
@@ -61,13 +83,21 @@ class TtsService extends ChangeNotifier {
     await _flutterTts.setPitch(_pitch);
   }
 
-  Future<void> speak(String text) async {
+  Future<void> speak(String text, {String? documentTitle}) async {
     if (text.isEmpty) return;
+    if (documentTitle != null && documentTitle.isNotEmpty) {
+      _currentTitle = documentTitle;
+    }
     _currentText = text;
     try {
       final result = await _flutterTts.speak(text);
       if (result == 1) {
         _state = TtsState.playing;
+        WidgetSync.syncTtsState(
+          fileName: _currentTitle,
+          isPlaying: true,
+          progress: 0.1,
+        );
         notifyListeners();
       }
     } catch (e) {
@@ -79,6 +109,11 @@ class TtsService extends ChangeNotifier {
     try {
       await _flutterTts.pause();
       _state = TtsState.paused;
+      WidgetSync.syncTtsState(
+        fileName: _currentTitle,
+        isPlaying: false,
+        progress: 0.5,
+      );
       notifyListeners();
     } catch (e) {
       LoggerService.error('TTS pause error: $e');
@@ -90,6 +125,11 @@ class TtsService extends ChangeNotifier {
       try {
         await _flutterTts.speak(_currentText);
         _state = TtsState.playing;
+        WidgetSync.syncTtsState(
+          fileName: _currentTitle,
+          isPlaying: true,
+          progress: 0.5,
+        );
         notifyListeners();
       } catch (e) {
         LoggerService.error('TTS resume error: $e');
@@ -101,6 +141,7 @@ class TtsService extends ChangeNotifier {
     try {
       await _flutterTts.stop();
       _state = TtsState.stopped;
+      WidgetSync.resetTtsState();
       notifyListeners();
     } catch (e) {
       LoggerService.error('TTS stop error: $e');

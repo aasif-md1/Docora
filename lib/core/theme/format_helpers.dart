@@ -10,12 +10,12 @@ enum DocumentFormat {
   ppt('PowerPoint', AppColors.filePpt, LucideIcons.file_play),
   image('Image', AppColors.fileImage, LucideIcons.file_image),
   text('Text', AppColors.fileText, LucideIcons.file_text),
-  code('Code', Color(0xFF10B981), LucideIcons.file_code),
+  code('Code', AppColors.success, LucideIcons.file_code),
   archive('Archive', AppColors.fileArchive, LucideIcons.file_archive),
-  audio('Audio', Color(0xFFEC4899), LucideIcons.file_music),
-  video('Video', Color(0xFF06B6D4), LucideIcons.video),
+  audio('Audio', AppColors.accent, LucideIcons.file_music),
+  video('Video', AppColors.primary, LucideIcons.video),
   epub('EPUB', AppColors.fileEpub, LucideIcons.book_open),
-  other('Document', Color(0xFF6B7280), LucideIcons.file);
+  other('Document', AppColors.secondaryText, LucideIcons.file);
 
   const DocumentFormat(this.label, this.color, this.icon);
 

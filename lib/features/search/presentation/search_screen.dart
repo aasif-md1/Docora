@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'package:docora/core/services/document_opener.dart';
-import 'package:docora/core/theme/app_colors.dart';
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_spacing.dart';
-import 'package:docora/core/theme/format_helpers.dart';
 import 'package:docora/core/widgets/widgets.dart';
 import 'package:docora/domain/entities/document_entity.dart';
 import 'package:docora/features/files/presentation/providers/files_providers.dart';
-import 'package:docora/features/viewer/domain/models/text_document_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

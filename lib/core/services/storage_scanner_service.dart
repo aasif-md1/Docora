@@ -207,7 +207,7 @@ class StorageScannerService {
       final directoryPath = await FilePicker.platform.getDirectoryPath();
       if (directoryPath == null) return [];
 
-      return scanStorage(targetRoots: [directoryPath]);
+      return await scanStorage(targetRoots: [directoryPath]);
     } on Object catch (e, st) {
       LoggerService.error('Folder pick failed', error: e, stackTrace: st);
       return [];

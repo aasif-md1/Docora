@@ -27,6 +27,9 @@ abstract class DocumentRepository {
   /// Stream of recently opened documents
   Stream<List<DocumentEntity>> watchRecentDocuments({int limit = 10});
 
+  /// Clear all recent document history and reading positions
+  Future<void> clearRecentHistory();
+
   /// Stream of favorite documents
   Stream<List<DocumentEntity>> watchFavoriteDocuments();
 

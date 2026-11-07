@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:docora/core/services/logger_service.dart';
+import 'package:docora/core/services/widget_sync.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
@@ -114,6 +115,7 @@ class VaultService {
     final targetFile = File('${vaultDir.path}/$encryptedFileName');
 
     await targetFile.writeAsBytes(encrypted.bytes);
+    unawaited(syncVaultStateToWidget());
 
     return VaultFile(
       encryptedPath: targetFile.path,
@@ -148,6 +150,7 @@ class VaultService {
 
     await File(decryptedPath).copy(targetFile.path);
     await File(encryptedPath).delete();
+    unawaited(syncVaultStateToWidget());
     return targetFile.path;
   }
 
@@ -169,6 +172,7 @@ class VaultService {
         ),
       );
     }
+    unawaited(syncVaultStateToWidget(cachedFiles: results));
     return results;
   }
 
@@ -177,6 +181,23 @@ class VaultService {
     if (await file.exists()) {
       await file.delete();
     }
+    unawaited(syncVaultStateToWidget());
+  }
+
+  /// Syncs real file count and storage bytes to the Android Home Widget.
+  Future<void> syncVaultStateToWidget({List<VaultFile>? cachedFiles}) async {
+    try {
+      final files = cachedFiles ?? await listVaultFiles();
+      var used = 0;
+      for (final f in files) {
+        used += f.sizeBytes;
+      }
+      await WidgetSync.syncVaultState(
+        fileCount: files.length,
+        usedBytes: used,
+        totalBytes: used > 0 ? used : 0,
+      );
+    } catch (_) {}
   }
 
   String _extractOriginalName(String encryptedPath) {

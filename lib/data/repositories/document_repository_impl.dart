@@ -129,6 +129,11 @@ class DocumentRepositoryImpl implements DocumentRepository {
           );
 
   @override
+  Future<void> clearRecentHistory() async {
+    await _db.clearRecentHistory();
+  }
+
+  @override
   Stream<List<DocumentEntity>> watchFavoriteDocuments() =>
       _db.watchFavoriteDocuments().map(
             (rows) => rows.map(_toEntity).toList(),

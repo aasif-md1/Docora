@@ -2,7 +2,6 @@ import 'package:docora/core/theme/app_colors.dart';
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_spacing.dart';
 import 'package:docora/core/theme/format_helpers.dart';
-import 'package:docora/core/widgets/docora_button.dart';
 import 'package:docora/domain/entities/document_entity.dart';
 import 'package:docora/features/files/presentation/providers/files_providers.dart';
 import 'package:flutter/material.dart';

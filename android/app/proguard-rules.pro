@@ -56,6 +56,14 @@
     java.lang.Object readResolve();
 }
 
+# ── WebView & JavaScript Bridge ────────────────────────────────────────────────
+-keepattributes JavascriptInterface
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
+-keep class io.flutter.plugins.webviewflutter.** { *; }
+-dontwarn io.flutter.plugins.webviewflutter.**
+
 # ── Keep BuildConfig ─────────────────────────────────────────────────────────
 -keep class com.docora.app.BuildConfig { *; }
 

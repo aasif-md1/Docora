@@ -164,7 +164,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   Future<void> _runFastOcrSimulation() async {
     setState(() => _isOcrRunning = true);
     // Extract document text details
-    await Future.delayed(const Duration(milliseconds: 600));
+    await Future<void>.delayed(const Duration(milliseconds: 600));
     if (mounted) {
       setState(() {
         _isOcrRunning = false;

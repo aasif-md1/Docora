@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacing (8dp grid) -->
+    <dimen name="widget_space_4">4dp</dimen>
+    <dimen name="widget_space_8">8dp</dimen>
+    <dimen name="widget_space_12">12dp</dimen>
+    <dimen name="widget_space_16">16dp</dimen>
+    <dimen name="widget_space_24">24dp</dimen>
+
+    <!-- Corner Radii -->
+    <dimen name="widget_radius_outer">24dp</dimen>
+    <dimen name="widget_radius_inner">12dp</dimen>
+    <dimen name="widget_radius_pill">999dp</dimen>
+
+    <!-- Component Sizing -->
+    <dimen name="widget_icon_box_size">44dp</dimen>
+    <dimen name="widget_icon_size">24dp</dimen>
+    <dimen name="widget_btn_height">40dp</dimen>
+    <dimen name="widget_progress_height">6dp</dimen>
+    <dimen name="widget_min_touch_target">48dp</dimen>
+
+    <!-- Typography -->
+    <dimen name="widget_text_title">15sp</dimen>
+    <dimen name="widget_text_caption">12sp</dimen>
+    <dimen name="widget_text_btn">13sp</dimen>
+    <dimen name="widget_text_icon_label">11sp</dimen>
+</resources>
+

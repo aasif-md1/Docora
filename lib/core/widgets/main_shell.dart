@@ -2,17 +2,20 @@ import 'dart:async';
 
 import 'package:docora/core/router/app_routes.dart';
 import 'package:docora/core/services/document_opener.dart';
+import 'package:docora/core/theme/app_colors.dart';
 import 'package:docora/core/theme/app_motion.dart';
-import 'package:docora/core/theme/app_spacing.dart';
+import 'package:docora/core/theme/app_theme.dart';
+import 'package:docora/widgets/docora_bottom_nav.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// The main app shell — persistent bottom navigation bar + FAB.
+/// The main app shell — persistent bottom navigation bar + centre action button.
 /// Wraps the 4 main tabs: Home, Files, Tools, Settings.
-class MainShell extends StatefulWidget {
+class MainShell extends ConsumerStatefulWidget {
   const MainShell({
     required this.child,
     this.location = AppRoutes.home,
@@ -23,38 +26,18 @@ class MainShell extends StatefulWidget {
   final String location;
 
   @override
-  State<MainShell> createState() => _MainShellState();
+  ConsumerState<MainShell> createState() => _MainShellState();
 }
 
-class _MainShellState extends State<MainShell> {
+class _MainShellState extends ConsumerState<MainShell> {
   static final List<int> _tabHistory = [0];
   static bool _isPopping = false;
 
-  static const List<_NavItem> _navItems = [
-    _NavItem(
-      route: AppRoutes.home,
-      label: 'Home',
-      icon: LucideIcons.house,
-      activeIcon: LucideIcons.house,
-    ),
-    _NavItem(
-      route: AppRoutes.files,
-      label: 'Files',
-      icon: LucideIcons.folder,
-      activeIcon: LucideIcons.folder_open,
-    ),
-    _NavItem(
-      route: AppRoutes.tools,
-      label: 'Tools',
-      icon: LucideIcons.wrench,
-      activeIcon: LucideIcons.wrench,
-    ),
-    _NavItem(
-      route: AppRoutes.settings,
-      label: 'Settings',
-      icon: LucideIcons.settings,
-      activeIcon: LucideIcons.settings,
-    ),
+  static const List<String> _routes = [
+    AppRoutes.home,
+    AppRoutes.files,
+    AppRoutes.tools,
+    AppRoutes.settings,
   ];
 
   int get _currentIndex {
@@ -90,9 +73,9 @@ class _MainShellState extends State<MainShell> {
   }
 
   void _onTabTap(BuildContext context, int index) {
-    HapticFeedback.selectionClick();
+    if (index == _currentIndex) return;
     _recordTab(index);
-    context.go(_navItems[index].route);
+    context.go(_routes[index]);
   }
 
   static int _lastBackTimestamp = 0;
@@ -112,7 +95,7 @@ class _MainShellState extends State<MainShell> {
     if (_tabHistory.isNotEmpty) {
       _isPopping = true;
       final prevIndex = _tabHistory.last;
-      context.go(_navItems[prevIndex].route);
+      context.go(_routes[prevIndex]);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _isPopping = false;
       });
@@ -139,133 +122,7 @@ class _MainShellState extends State<MainShell> {
     return _tabHistory.where((tab) => tab != 0).isEmpty;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final currentIndex = _currentIndex;
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        if (_isAtRootHome) {
-          SystemNavigator.pop();
-        } else {
-          handleBack(context, _currentIndex);
-        }
-      },
-      child: Scaffold(
-        body: widget.child,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: currentIndex,
-          onDestinationSelected: (i) => _onTabTap(context, i),
-          destinations: _navItems.map((item) => NavigationDestination(
-              icon: Icon(
-                item.icon,
-                size: AppSpacing.xl,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              selectedIcon: Icon(
-                item.activeIcon,
-                size: AppSpacing.xl,
-                color: colorScheme.primary,
-              ),
-              label: item.label,
-              tooltip: item.label,
-            )).toList(),
-        ),
-        floatingActionButton: _DocoraFab(isVisible: currentIndex <= 1),
-      ),
-    );
-  }
-}
-
-/// Individual navigation tab definition
-class _NavItem {
-  const _NavItem({
-    required this.route,
-    required this.label,
-    required this.icon,
-    required this.activeIcon,
-  });
-
-  final String route;
-  final String label;
-  final IconData icon;
-  final IconData activeIcon;
-}
-
-/// Expandable FAB for: Open file, Scan, Create new
-class _DocoraFab extends StatefulWidget {
-  const _DocoraFab({required this.isVisible});
-  final bool isVisible;
-
-  @override
-  State<_DocoraFab> createState() => _DocoraFabState();
-}
-
-class _DocoraFabState extends State<_DocoraFab>
-    with SingleTickerProviderStateMixin {
-  bool _isExpanded = false;
-
-  late AnimationController _controller;
-  late Animation<double> _rotateAnimation;
-  // Staggered animations for each mini FAB item (enter from bottom)
-  late List<Animation<double>> _itemAnimations;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: AppMotion.slow, // 300ms — modal-type interaction
-      vsync: this,
-    );
-    // Custom ease-in-out curve instead of weak default
-    _rotateAnimation = Tween<double>(begin: 0, end: 0.125).animate(
-      CurvedAnimation(parent: _controller, curve: AppMotion.standard),
-    );
-    // Staggered intervals for each mini FAB (3 items)
-    _itemAnimations = List.generate(3, (index) {
-      // Items appear bottom-to-top: item 2 first, then 1, then 0
-      final reverseIndex = 2 - index;
-      final start = (reverseIndex * 0.15).clamp(0.0, 1.0);
-      final end = (start + 0.6).clamp(0.0, 1.0);
-      return CurvedAnimation(
-        parent: _controller,
-        curve: Interval(start, end, curve: AppMotion.enter),
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _toggle() {
-    HapticFeedback.mediumImpact();
-    setState(() => _isExpanded = !_isExpanded);
-    if (_isExpanded) {
-      _controller.forward();
-    } else {
-      _controller.reverse();
-    }
-  }
-
-  void _close() {
-    if (_isExpanded) _toggle();
-  }
-
-  void _onScanDocument(BuildContext context) {
-    _close();
-    AppMotion.subtleHaptic();
-    context.push(AppRoutes.scanner);
-  }
-
   Future<void> _onOpenFile(BuildContext context) async {
-    _close();
-    AppMotion.subtleHaptic();
     try {
       final result = await FilePicker.platform.pickFiles(
         allowMultiple: false,
@@ -279,17 +136,17 @@ class _DocoraFabState extends State<_DocoraFab>
     } catch (_) {}
   }
 
-  void _onCreateNew(BuildContext context) {
-    _close();
+  void _onAddTap(BuildContext context, Color currentAccent) {
     AppMotion.subtleHaptic();
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
         final theme = Theme.of(ctx);
+        final colorScheme = theme.colorScheme;
         return Container(
           decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
+            color: colorScheme.surface,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
@@ -319,10 +176,10 @@ class _DocoraFabState extends State<_DocoraFab>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
+                    color: currentAccent.withAlpha(30),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(LucideIcons.camera, color: theme.colorScheme.primary, size: 20),
+                  child: Icon(LucideIcons.camera, color: currentAccent, size: 20),
                 ),
                 title: const Text('Scan with Camera'),
                 subtitle: const Text('Auto-crop receipts, invoices & documents'),
@@ -335,10 +192,10 @@ class _DocoraFabState extends State<_DocoraFab>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.secondaryContainer,
+                    color: colorScheme.secondaryContainer,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(LucideIcons.images, color: theme.colorScheme.secondary, size: 20),
+                  child: Icon(LucideIcons.images, color: colorScheme.secondary, size: 20),
                 ),
                 title: const Text('Photos to PDF'),
                 subtitle: const Text('Convert multiple gallery photos to PDF'),
@@ -351,10 +208,10 @@ class _DocoraFabState extends State<_DocoraFab>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.tertiaryContainer,
+                    color: colorScheme.tertiaryContainer,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(LucideIcons.folder_open, color: theme.colorScheme.tertiary, size: 20),
+                  child: Icon(LucideIcons.folder_open, color: colorScheme.tertiary, size: 20),
                 ),
                 title: const Text('Browse Files'),
                 subtitle: const Text('Open any document from phone storage'),
@@ -372,156 +229,28 @@ class _DocoraFabState extends State<_DocoraFab>
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.isVisible) return const SizedBox.shrink();
+    final currentIndex = _currentIndex;
+    final accentIndex = ref.watch(accentColorIndexProvider);
+    final currentAccent = AppColors.accentOptions[accentIndex.clamp(0, AppColors.accentOptions.length - 1)];
 
-    final colorScheme = Theme.of(context).colorScheme;
-
-    final miniFabItems = [
-      _MiniFabItem(
-        icon: LucideIcons.scan_line,
-        label: 'Scan document',
-        onTap: () => _onScanDocument(context),
-      ),
-      _MiniFabItem(
-        icon: LucideIcons.file_plus,
-        label: 'Create new',
-        onTap: () => _onCreateNew(context),
-      ),
-      _MiniFabItem(
-        icon: LucideIcons.folder_open,
-        label: 'Open file',
-        onTap: () => _onOpenFile(context),
-      ),
-    ];
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        // Staggered mini FAB items — only rendered when expanded/animating
-        AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) {
-            if (_controller.value == 0 && !_isExpanded) {
-              return const SizedBox.shrink();
-            }
-            return IgnorePointer(
-              ignoring: !_isExpanded,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  ...List.generate(miniFabItems.length, (index) {
-                    final value = _itemAnimations[index].value;
-                    return Opacity(
-                      opacity: value.clamp(0.0, 1.0),
-                      child: Transform.translate(
-                        offset: Offset(0, 12 * (1 - value)),
-                        child: Transform.scale(
-                          scale: AppMotion.enterScale +
-                              (1.0 - AppMotion.enterScale) * value,
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                            child: miniFabItems[index],
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                  const SizedBox(height: AppSpacing.xs),
-                ],
-              ),
-            );
-          },
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_isAtRootHome) {
+          SystemNavigator.pop();
+        } else {
+          handleBack(context, _currentIndex);
+        }
+      },
+      child: Scaffold(
+        body: widget.child,
+        bottomNavigationBar: DocoraBottomNav(
+          currentIndex: currentIndex,
+          accent: currentAccent,
+          onTap: (i) => _onTabTap(context, i),
+          onAddTap: () => _onAddTap(context, currentAccent),
         ),
-
-        // Main FAB with gradient shadow
-        Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.primary.withAlpha(40),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: FloatingActionButton(
-            onPressed: _toggle,
-            elevation: 2,
-            backgroundColor: colorScheme.primary,
-            foregroundColor: colorScheme.onPrimary,
-            tooltip: 'Open actions',
-            child: RotationTransition(
-              turns: _rotateAnimation,
-              child: const Icon(LucideIcons.plus, size: 24),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _MiniFabItem extends StatelessWidget {
-  const _MiniFabItem({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Label chip
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.xs,
-            ),
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(AppSpacing.sm),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.12),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Text(
-              label,
-              style: textTheme.labelMedium?.copyWith(
-                color: colorScheme.onSurface,
-              ),
-            ),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          // Mini FAB circle
-          FloatingActionButton.small(
-            heroTag: label,
-            onPressed: onTap,
-            elevation: 2,
-            backgroundColor: colorScheme.secondaryContainer,
-            foregroundColor: colorScheme.onSecondaryContainer,
-            tooltip: label,
-            child: Icon(icon, size: 18),
-          ),
-        ],
       ),
     );
   }
@@ -588,4 +317,3 @@ class MainTabBackHandler extends StatelessWidget {
     return child;
   }
 }
-
