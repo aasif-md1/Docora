@@ -1,5 +1,6 @@
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_spacing.dart';
+import 'package:docora/core/theme/clay_decorations.dart';
 import 'package:docora/core/theme/format_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
@@ -135,21 +136,11 @@ class FilterChipBar extends StatelessWidget {
                     horizontal: AppSpacing.md,
                     vertical: 6,
                   ),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? activeColor.withAlpha(28)
-                        : isAmoled
-                            ? const Color(0xFF141414)
-                            : colorScheme.surfaceContainerHigh.withAlpha(120),
+                  decoration: ClayDecorations.subtle(
+                    context,
                     borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-                    border: Border.all(
-                      color: isSelected
-                          ? activeColor
-                          : isAmoled
-                              ? const Color(0xFF262626)
-                              : colorScheme.outlineVariant.withAlpha(60),
-                      width: isSelected ? 1.5 : 1.0,
-                    ),
+                    accentColor: activeColor,
+                    isSelected: isSelected,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,

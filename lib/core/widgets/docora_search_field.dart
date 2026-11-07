@@ -1,5 +1,6 @@
 import 'package:docora/core/theme/app_radius.dart';
 import 'package:docora/core/theme/app_spacing.dart';
+import 'package:docora/core/theme/clay_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
@@ -64,12 +65,9 @@ class _DocoraSearchFieldState extends State<DocoraSearchField> {
 
     return Container(
       height: 48,
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      decoration: NeumorphicDecorations.inset(
+        context,
         borderRadius: BorderRadius.circular(AppRadius.full),
-        border: Border.all(
-          color: colorScheme.outline.withValues(alpha: 0.15),
-        ),
       ),
       child: Row(
         children: [

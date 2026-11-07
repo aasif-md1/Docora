@@ -9,3 +9,5 @@ export 'document_grid_item.dart';
 export 'document_list_item.dart';
 export 'filter_chip_bar.dart';
 export 'main_shell.dart';
+export 'package:docora/core/theme/clay_decorations.dart';
+export 'package:docora/core/theme/neumorphic_decorations.dart';

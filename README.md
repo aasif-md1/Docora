@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/icons/splash_logo.png" alt="Docora Logo" width="140" />
+<img src="icon.png" alt="Docora Logo" width="140" />
 
 # Docora
 

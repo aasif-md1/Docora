@@ -1,20 +1,20 @@
 import 'package:docora/core/theme/app_motion.dart';
-import 'package:docora/core/theme/app_radius.dart';
-import 'package:docora/core/theme/app_spacing.dart';
+import 'package:docora/core/theme/clay_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 enum DocoraCardVariant { elevated, filled, outlined }
 
-/// A premium card container following Docora's Material 3 styling.
-/// Uses semi-transparent shadows instead of solid borders (Emil Kowalski's principle).
-/// Interactive cards have press-scale feedback.
+/// A premium Claymorphism (Soft 3D) card container for Docora.
+/// Features inflated tactile surfaces, layered dual shadows, top highlights,
+/// and smooth press-scale haptic feedback.
 class DocoraCard extends StatefulWidget {
   const DocoraCard({
     required this.child,
     super.key,
     this.variant = DocoraCardVariant.filled,
-    this.padding = const EdgeInsets.all(AppSpacing.md),
+    this.elevation = ClayElevation.raised,
+    this.padding = const EdgeInsets.all(16),
     this.margin = EdgeInsets.zero,
     this.borderRadius,
     this.onTap,
@@ -27,6 +27,7 @@ class DocoraCard extends StatefulWidget {
 
   final Widget child;
   final DocoraCardVariant variant;
+  final ClayElevation elevation;
   final EdgeInsetsGeometry padding;
   final EdgeInsetsGeometry margin;
   final BorderRadius? borderRadius;
@@ -35,7 +36,8 @@ class DocoraCard extends StatefulWidget {
   final Color? backgroundColor;
   final Color? borderColor;
   final bool selected;
-  /// When true, the card will animate in with scale + opacity (enter animation)
+
+  /// When true, the card animates in with scale + opacity
   final bool animate;
 
   @override
@@ -46,6 +48,7 @@ class _DocoraCardState extends State<DocoraCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _pressController;
   late Animation<double> _pressScale;
+  bool _isPressed = false;
 
   @override
   void initState() {
@@ -67,129 +70,101 @@ class _DocoraCardState extends State<DocoraCard>
 
   void _onTapDown(TapDownDetails _) {
     if (widget.onTap == null) return;
+    setState(() => _isPressed = true);
     _pressController.forward();
   }
 
   void _onTapUp(TapUpDetails _) {
+    setState(() => _isPressed = false);
     _pressController.reverse();
   }
 
   void _onTapCancel() {
+    setState(() => _isPressed = false);
     _pressController.reverse();
   }
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final radius = widget.borderRadius ?? BorderRadius.circular(AppRadius.lg);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final radius = widget.borderRadius ?? BorderRadius.circular(ClayDecorations.radiusCard);
 
-    Color resolvedBg;
-    Border? resolvedBorder;
-    List<BoxShadow>? resolvedShadow;
+    BoxDecoration boxDecoration;
 
-    switch (widget.variant) {
-      case DocoraCardVariant.elevated:
-        resolvedBg = widget.backgroundColor ?? colorScheme.surface;
-        // Semi-transparent shadow instead of solid border (Emil Kowalski)
-        resolvedShadow = [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
-          ),
-        ];
-        resolvedBorder = Border.all(
+    if (widget.variant == DocoraCardVariant.outlined) {
+      boxDecoration = BoxDecoration(
+        color: widget.backgroundColor ?? Colors.transparent,
+        borderRadius: radius,
+        border: Border.all(
           color: widget.selected
               ? colorScheme.primary
-              : widget.borderColor ?? colorScheme.outline.withValues(alpha: 0.08),
-          width: widget.selected ? 2 : 1,
-        );
-      case DocoraCardVariant.filled:
-        resolvedBg = widget.backgroundColor ??
-            (widget.selected
-                ? colorScheme.primaryContainer.withValues(alpha: 0.3)
-                : colorScheme.surface);
-        resolvedBorder = Border.all(
-          color: widget.selected
-              ? colorScheme.primary
-              : widget.borderColor ?? colorScheme.outline.withValues(alpha: 0.08),
-          width: widget.selected ? 2 : 1,
-        );
-      case DocoraCardVariant.outlined:
-        resolvedBg = widget.backgroundColor ?? Colors.transparent;
-        resolvedBorder = Border.all(
-          color: widget.selected
-              ? colorScheme.primary
-              : widget.borderColor ?? colorScheme.outline.withValues(alpha: 0.15),
-          width: widget.selected ? 2 : 1,
-        );
+              : widget.borderColor ?? colorScheme.outline.withAlpha(50),
+          width: widget.selected ? 1.5 : 1.0,
+        ),
+      );
+    } else {
+      boxDecoration = ClayDecorations.decoration(
+        context,
+        elevation: widget.elevation,
+        borderRadius: radius,
+        surfaceColor: widget.backgroundColor,
+        isSelected: widget.selected,
+        isPressed: _isPressed,
+        customBorder: widget.borderColor != null
+            ? Border.all(color: widget.borderColor!, width: widget.selected ? 1.5 : 1.0)
+            : null,
+      );
     }
 
-    final bool isInteractive = widget.onTap != null;
+    final isInteractive = widget.onTap != null;
 
-    Widget cardContent = Container(
-      padding: widget.padding,
-      decoration: BoxDecoration(
+    Widget cardBody = DecoratedBox(
+      decoration: boxDecoration,
+      child: Material(
+        color: Colors.transparent,
         borderRadius: radius,
-        border: resolvedBorder,
-        boxShadow: resolvedShadow,
+        child: InkWell(
+          borderRadius: radius,
+          onTap: widget.onTap != null
+              ? () {
+                  HapticFeedback.lightImpact();
+                  widget.onTap!();
+                }
+              : null,
+          onLongPress: widget.onLongPress != null
+              ? () {
+                  HapticFeedback.mediumImpact();
+                  widget.onLongPress!();
+                }
+              : null,
+          child: Padding(
+            padding: widget.padding,
+            child: widget.child,
+          ),
+        ),
       ),
-      child: widget.child,
     );
 
     Widget card = Padding(
       padding: widget.margin,
-      child: Material(
-        color: resolvedBg,
-        borderRadius: radius,
-        child: isInteractive
-            ? GestureDetector(
-                onTapDown: _onTapDown,
-                onTapUp: _onTapUp,
-                onTapCancel: _onTapCancel,
-                child: AnimatedBuilder(
-                  animation: _pressScale,
-                  builder: (context, child) => Transform.scale(
-                    scale: _pressScale.value,
-                    child: child,
-                  ),
-                  child: InkWell(
-                    borderRadius: radius,
-                    onTap: widget.onTap != null
-                        ? () {
-                            HapticFeedback.lightImpact();
-                            widget.onTap!();
-                          }
-                        : null,
-                    onLongPress: widget.onLongPress != null
-                        ? () {
-                            HapticFeedback.mediumImpact();
-                            widget.onLongPress!();
-                          }
-                        : null,
-                    child: cardContent,
-                  ),
+      child: isInteractive
+          ? GestureDetector(
+              onTapDown: _onTapDown,
+              onTapUp: _onTapUp,
+              onTapCancel: _onTapCancel,
+              child: AnimatedBuilder(
+                animation: _pressScale,
+                builder: (context, child) => Transform.scale(
+                  scale: _pressScale.value,
+                  child: child,
                 ),
-              )
-            : InkWell(
-                borderRadius: radius,
-                onLongPress: widget.onLongPress != null
-                    ? () {
-                        HapticFeedback.mediumImpact();
-                        widget.onLongPress!();
-                      }
-                    : null,
-                child: cardContent,
+                child: cardBody,
               ),
-      ),
+            )
+          : cardBody,
     );
 
-    // Enter animation: scale from 0.95 + fade in (never scale from 0!)
     if (widget.animate) {
       card = TweenAnimationBuilder<double>(
         tween: Tween(begin: 0.0, end: 1.0),

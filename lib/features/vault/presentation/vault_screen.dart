@@ -3,6 +3,7 @@ import 'package:docora/core/services/vault_service.dart';
 import 'package:docora/core/theme/app_colors.dart';
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_spacing.dart';
+import 'package:docora/core/theme/clay_decorations.dart';
 import 'package:docora/core/theme/format_helpers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -240,8 +241,13 @@ class _VaultScreenState extends State<VaultScreen> {
                   sizeStr = '${(file.sizeBytes / 1024).toStringAsFixed(1)} KB';
                 }
 
-                return Card(
+                return DecoratedBox(
+                  decoration: ClayDecorations.card(
+                    context,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     leading: CircleAvatar(
                       backgroundColor: format.color.withAlpha(30),
                       child: Icon(format.icon, color: format.color, size: 20),
@@ -275,8 +281,18 @@ class _VaultScreenState extends State<VaultScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(LucideIcons.shield_check, size: 64, color: AppColors.primary500),
-                const SizedBox(height: AppSpacing.md),
+                DecoratedBox(
+                  decoration: ClayDecorations.tile(
+                    context,
+                    borderRadius: BorderRadius.circular(24),
+                    accentColor: colorScheme.primary,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Icon(LucideIcons.shield_check, size: 48, color: colorScheme.primary),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
                 Text(
                   _hasPin ? 'Unlock Vault' : 'Create Vault PIN',
                   style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
@@ -293,17 +309,27 @@ class _VaultScreenState extends State<VaultScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(4, (index) {
                     final filled = index < _enteredPin.length;
-                    return Container(
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
                       margin: const EdgeInsets.symmetric(horizontal: 10),
                       width: 16,
                       height: 16,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: filled ? AppColors.primary500 : colorScheme.surfaceContainerHighest,
+                        color: filled ? colorScheme.primary : colorScheme.surfaceContainerHighest,
                         border: Border.all(
-                          color: filled ? AppColors.primary500 : colorScheme.outlineVariant,
+                          color: filled ? colorScheme.primary : colorScheme.outlineVariant,
                           width: 2,
                         ),
+                        boxShadow: filled
+                            ? [
+                                BoxShadow(
+                                  color: colorScheme.primary.withAlpha(80),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
                       ),
                     );
                   }),
@@ -313,16 +339,18 @@ class _VaultScreenState extends State<VaultScreen> {
 
                 // Numeric Keypad
                 SizedBox(
-                  width: 260,
+                  width: 270,
                   child: GridView.count(
                     shrinkWrap: true,
                     crossAxisCount: 3,
-                    childAspectRatio: 1.2,
+                    childAspectRatio: 1.15,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
                       ...List.generate(9, (i) => _buildKeypadButton('${i + 1}')),
                       IconButton(
-                        icon: const Icon(Icons.fingerprint, size: 28, color: AppColors.primary500),
+                        icon: Icon(Icons.fingerprint, size: 30, color: colorScheme.primary),
                         onPressed: _attemptBiometric,
                       ),
                       _buildKeypadButton('0'),
@@ -342,13 +370,23 @@ class _VaultScreenState extends State<VaultScreen> {
   }
 
   Widget _buildKeypadButton(String digit) {
-    return InkWell(
-      onTap: () => _onPinDigit(digit),
-      borderRadius: BorderRadius.circular(30),
-      child: Center(
-        child: Text(
-          digit,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+    return DecoratedBox(
+      decoration: ClayDecorations.tile(
+        context,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(24),
+        child: InkWell(
+          onTap: () => _onPinDigit(digit),
+          borderRadius: BorderRadius.circular(24),
+          child: Center(
+            child: Text(
+              digit,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+            ),
+          ),
         ),
       ),
     );

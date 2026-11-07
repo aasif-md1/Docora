@@ -110,8 +110,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             Expanded(
               child: Container(
                 height: 44,
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withAlpha(120),
+                decoration: NeumorphicDecorations.inset(
+                  context,
                   borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
                 ),
                 child: TextField(
@@ -204,14 +204,15 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             Container(
               width: 80,
               height: 80,
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer.withAlpha(60),
-                shape: BoxShape.circle,
+              decoration: NeumorphicDecorations.subtle(
+                context,
+                borderRadius: BorderRadius.circular(40),
+                accentColor: colorScheme.primary,
               ),
               child: Icon(
                 LucideIcons.search,
-                size: 36,
-                color: colorScheme.primary.withAlpha(140),
+                size: 34,
+                color: colorScheme.primary,
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -383,11 +384,36 @@ class _SuggestionChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return ActionChip(
-      avatar: Icon(LucideIcons.sparkles, size: 14, color: colorScheme.primary),
-      label: Text(label),
-      onPressed: onTap,
-      side: BorderSide(color: colorScheme.outlineVariant.withAlpha(80)),
+    return Container(
+      decoration: NeumorphicDecorations.subtle(
+        context,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(LucideIcons.tag, size: 14, color: colorScheme.primary),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

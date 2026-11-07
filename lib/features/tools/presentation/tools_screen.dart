@@ -2,6 +2,7 @@ import 'package:docora/core/router/app_routes.dart';
 import 'package:docora/core/theme/app_colors.dart';
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_spacing.dart';
+import 'package:docora/core/theme/clay_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:go_router/go_router.dart';
@@ -142,11 +143,10 @@ class _ToolCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
+    return DecoratedBox(
+      decoration: ClayDecorations.card(
+        context,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outline.withAlpha(50)),
       ),
       child: Material(
         color: Colors.transparent,

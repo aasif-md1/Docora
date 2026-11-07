@@ -252,13 +252,19 @@ class AppTheme {
         }),
       ),
 
-      // Cards — semi-transparent borders (Emil Kowalski: use shadows over solid borders)
+      // Cards — Claymorphism (Soft 3D) default styling
       cardTheme: CardThemeData(
-        elevation: 0,
+        elevation: 2,
+        shadowColor: isLight
+            ? const Color(0x180F172A)
+            : const Color(0x40000000),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.lg),
+          borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: colorScheme.outline.withValues(alpha: 0.08),
+            color: isLight
+                ? const Color(0x120F172A)
+                : const Color(0x18FFFFFF),
+            width: 1.0,
           ),
         ),
         color: colorScheme.surface,
@@ -322,9 +328,10 @@ class AppTheme {
       // Bottom sheet
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: colorScheme.surface,
+        elevation: 12,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(AppRadius.xl),
+            top: Radius.circular(24),
           ),
         ),
         showDragHandle: true,
@@ -338,12 +345,21 @@ class AppTheme {
         space: 1,
       ),
 
-      // Dialog
+      // Dialog — Claymorphism Level 3 Prominent elevation
       dialogTheme: DialogThemeData(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.xl),
+          borderRadius: BorderRadius.circular(22),
+          side: BorderSide(
+            color: isLight
+                ? const Color(0x120F172A)
+                : const Color(0x18FFFFFF),
+            width: 1.0,
+          ),
         ),
-        elevation: 0,
+        elevation: 10,
+        shadowColor: isLight
+            ? const Color(0x200F172A)
+            : const Color(0x60000000),
         backgroundColor: colorScheme.surface,
       ),
 

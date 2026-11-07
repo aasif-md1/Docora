@@ -102,21 +102,22 @@ class CollectionsScreen extends ConsumerWidget {
               final collection = collections[index];
               final color = _parseColor(collection.colorHex);
 
-              return Card(
-                elevation: 1,
-                shape: RoundedRectangleBorder(
+              return DecoratedBox(
+                decoration: ClayDecorations.card(
+                  context,
                   borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(
-                    color: color.withAlpha(50),
-                  ),
+                  accentColor: color,
                 ),
-                child: InkWell(
+                child: Material(
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(16),
-                  onTap: () => _openCollection(context, ref, collection),
-                  onLongPress: () =>
-                      _showCollectionActions(context, ref, collection),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.md),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () => _openCollection(context, ref, collection),
+                    onLongPress: () =>
+                        _showCollectionActions(context, ref, collection),
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.md),
                     child: Row(
                       children: [
                         Container(
@@ -164,7 +165,8 @@ class CollectionsScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-              );
+              ),
+            );
             },
           );
         },

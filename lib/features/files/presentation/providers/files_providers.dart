@@ -5,6 +5,7 @@ import 'package:docora/core/services/storage_scanner_service.dart';
 import 'package:docora/data/repositories/document_repository_impl.dart';
 import 'package:docora/domain/entities/document_entity.dart';
 import 'package:docora/domain/repositories/document_repository.dart';
+import 'package:docora/features/settings/presentation/providers/settings_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ── Base Service & Repository Providers ─────────────────────────────────────
@@ -32,7 +33,9 @@ final documentSortProvider =
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
-final isGridViewProvider = StateProvider<bool>((ref) => false);
+final isGridViewProvider = Provider<bool>((ref) {
+  return ref.watch(defaultViewProvider) == 'grid';
+});
 
 final isScanningProvider = StateProvider<bool>((ref) => false);
 

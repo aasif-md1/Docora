@@ -5,6 +5,7 @@ import 'package:docora/core/services/document_opener.dart';
 import 'package:docora/core/theme/app_colors.dart';
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_theme.dart';
+import 'package:docora/core/theme/clay_decorations.dart';
 import 'package:docora/widgets/docora_bottom_nav.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -145,9 +146,9 @@ class _MainShellState extends ConsumerState<MainShell> {
         final theme = Theme.of(ctx);
         final colorScheme = theme.colorScheme;
         return Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          decoration: ClayDecorations.prominent(
+            ctx,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
           child: Column(

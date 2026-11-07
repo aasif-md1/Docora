@@ -152,85 +152,93 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             // Section 1: Storage Overview Hero Banner
             _StaggeredFadeSlide(
               animation: _staggerAnimation(0),
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.cardPadding),
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: colorScheme.outline.withAlpha(50)),
+              child: DecoratedBox(
+                decoration: ClayDecorations.card(
+                  context,
+                  borderRadius: BorderRadius.circular(18),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary.withAlpha(20),
-                        borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.cardPadding),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary.withAlpha(20),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(
+                          LucideIcons.hard_drive,
+                          color: colorScheme.primary,
+                          size: 24,
+                        ),
                       ),
-                      child: Icon(
-                        LucideIcons.hard_drive,
-                        color: colorScheme.primary,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            '$totalDocs Documents Indexed',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Using ${_formatBytes(totalBytes)} offline storage',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Material(
-                      color: colorScheme.primary.withAlpha(20),
-                      borderRadius: BorderRadius.circular(20),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(20),
-                        onTap: () => context.go(AppRoutes.files),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'View All',
-                                style: theme.textTheme.labelMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: colorScheme.primary,
-                                ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '$totalDocs Documents Indexed',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
                               ),
-                              const SizedBox(width: 4),
-                              Icon(
-                                LucideIcons.chevron_right,
-                                size: 14,
-                                color: colorScheme.primary,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Using ${_formatBytes(totalBytes)} offline storage',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      DecoratedBox(
+                        decoration: ClayDecorations.subtle(
+                          context,
+                          borderRadius: BorderRadius.circular(20),
+                          accentColor: colorScheme.primary,
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(20),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: () => context.go(AppRoutes.files),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'View All',
+                                    style: theme.textTheme.labelMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: colorScheme.primary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    LucideIcons.chevron_right,
+                                    size: 14,
+                                    color: colorScheme.primary,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -332,40 +340,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 ),
                 data: (recentDocs) {
                   if (recentDocs.isEmpty) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppSpacing.xxl,
-                        horizontal: AppSpacing.lg,
+                    return DecoratedBox(
+                      decoration: ClayDecorations.card(
+                        context,
+                        borderRadius: BorderRadius.circular(18),
                       ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: colorScheme.outline.withAlpha(40)),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            LucideIcons.file_text,
-                            size: 40,
-                            color: colorScheme.onSurfaceVariant.withAlpha(120),
-                          ),
-                          const SizedBox(height: AppSpacing.sm),
-                          Text(
-                            'No recent documents',
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.xxl,
+                          horizontal: AppSpacing.lg,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              LucideIcons.file_text,
+                              size: 40,
+                              color: colorScheme.onSurfaceVariant.withAlpha(120),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Documents you open will appear here for fast access.',
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(
+                              'No recent documents',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              'Documents you open will appear here for fast access.',
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   }
@@ -413,6 +422,7 @@ class _CleanCategoryTileState extends State<_CleanCategoryTile>
     with SingleTickerProviderStateMixin {
   late AnimationController _pressController;
   late Animation<double> _pressScale;
+  bool _isPressed = false;
 
   @override
   void initState() {
@@ -439,12 +449,19 @@ class _CleanCategoryTileState extends State<_CleanCategoryTile>
 
     return Expanded(
       child: GestureDetector(
-        onTapDown: (_) => _pressController.forward(),
+        onTapDown: (_) {
+          setState(() => _isPressed = true);
+          _pressController.forward();
+        },
         onTapUp: (_) {
+          setState(() => _isPressed = false);
           _pressController.reverse();
           widget.onTap();
         },
-        onTapCancel: () => _pressController.reverse(),
+        onTapCancel: () {
+          setState(() => _isPressed = false);
+          _pressController.reverse();
+        },
         child: AnimatedBuilder(
           animation: _pressScale,
           builder: (context, child) => Transform.scale(
@@ -456,12 +473,10 @@ class _CleanCategoryTileState extends State<_CleanCategoryTile>
               vertical: 14,
               horizontal: 8,
             ),
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: colorScheme.outline.withAlpha(50),
-              ),
+            decoration: ClayDecorations.tile(
+              context,
+              borderRadius: BorderRadius.circular(16),
+              isPressed: _isPressed,
             ),
             child: Column(
               children: [

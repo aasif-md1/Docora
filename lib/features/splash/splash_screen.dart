@@ -6,14 +6,16 @@ import 'package:docora/core/services/logger_service.dart';
 import 'package:docora/core/theme/app_colors.dart';
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String _kOnboardingDoneKey = 'onboarding_done';
 
-/// Splash screen that waits for initialization, then routes to
-/// onboarding (first launch) or home (returning user).
+/// Fast, seamless splash screen that initializes intent consumption,
+/// checks user startup preference (Home vs Files Browser), removes the
+/// native splash screen, and routes directly without duplicate logo delay.
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
@@ -21,41 +23,14 @@ class SplashScreen extends ConsumerStatefulWidget {
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends ConsumerState<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
-
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
-    _controller = AnimationController(
-      duration: AppMotion.slow,
-      vsync: this,
-    );
-
-    _fadeAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
-
-    _controller.forward();
     _initAndNavigate();
   }
 
   Future<void> _initAndNavigate() async {
-    // Allow the logo animation to play
-    await Future<void>.delayed(AppMotion.slow + AppMotion.normal);
-
-
-    if (!mounted) return;
-
     // Check if app was launched via file intent (Open With...)
     final initialPath =
         await ref.read(intentServiceProvider).getAndConsumeInitialFile();
@@ -63,6 +38,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     if (initialPath != null && initialPath.isNotEmpty) {
       LoggerService.info('Routing to opened document: $initialPath');
+      FlutterNativeSplash.remove();
       context.go(AppRoutes.home);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         DocumentOpener.open(rootNavigatorKey.currentContext ?? context, initialPath);
@@ -77,6 +53,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     if (initialRoute != null && initialRoute.isNotEmpty) {
       LoggerService.info('Routing to requested intent route: $initialRoute');
+      FlutterNativeSplash.remove();
       context.go(AppRoutes.home);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         rootNavigatorKey.currentContext?.push(initialRoute);
@@ -89,60 +66,26 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     if (!mounted) return;
 
+    FlutterNativeSplash.remove();
+
     if (onboardingDone) {
-      context.go(AppRoutes.home);
+      final startup = prefs.getString('pref_startup_screen') ?? 'home';
+      if (startup == 'files') {
+        context.go(AppRoutes.files);
+      } else {
+        context.go(AppRoutes.home);
+      }
     } else {
       context.go(AppRoutes.onboarding);
     }
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: const SizedBox.shrink(),
+    );
   }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.backgroundDark,
-        body: Center(
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Docora Transparent Brand Logo
-                  Image.asset(
-                    'assets/icons/splash_logo.png',
-                    width: 96,
-                    height: 96,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Docora',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Every document. Beautifully simple.',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.white.withValues(alpha: 0.5),
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
 }

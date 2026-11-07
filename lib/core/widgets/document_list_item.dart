@@ -1,5 +1,6 @@
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_spacing.dart';
+import 'package:docora/core/theme/clay_decorations.dart';
 import 'package:docora/core/theme/format_helpers.dart';
 import 'package:docora/core/widgets/document_format_badge.dart';
 import 'package:docora/domain/entities/document_entity.dart';
@@ -64,27 +65,16 @@ class DocumentListItem extends StatelessWidget {
           horizontal: AppSpacing.md,
           vertical: AppSpacing.xs,
         ),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primaryContainer.withAlpha(80)
-              : isAmoled
-                  ? const Color(0xFF0F0F0F)
-                  : colorScheme.surface,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-          border: Border.all(
-            color: isSelected
-                ? colorScheme.primary
-                : isAmoled
-                    ? const Color(0xFF222222)
-                    : colorScheme.outlineVariant.withAlpha(60),
-            width: isSelected ? 1.5 : 1.0,
-          ),
+        decoration: ClayDecorations.card(
+          context,
+          borderRadius: BorderRadius.circular(16),
+          isSelected: isSelected,
         ),
         child: Material(
           color: Colors.transparent,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          borderRadius: BorderRadius.circular(16),
           child: InkWell(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+            borderRadius: BorderRadius.circular(16),
             onTap: () {
               AppMotion.subtleHaptic();
               if (isSelectionMode) {

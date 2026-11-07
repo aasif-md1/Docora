@@ -3,6 +3,7 @@ import 'package:docora/core/services/widget_sync.dart';
 import 'package:docora/core/theme/app_colors.dart';
 import 'package:docora/core/theme/app_spacing.dart';
 import 'package:docora/core/theme/app_theme.dart';
+import 'package:docora/core/theme/clay_decorations.dart';
 import 'package:docora/features/files/presentation/providers/files_providers.dart';
 import 'package:docora/features/settings/presentation/providers/settings_provider.dart';
 import 'package:flutter/material.dart';
@@ -265,6 +266,7 @@ class SettingsScreen extends ConsumerWidget {
           // ── GENERAL ──
           _sectionHeader('GENERAL', LucideIcons.sliders_horizontal, colorScheme.primary),
           _cardContainer(
+            context: context,
             colorScheme: colorScheme,
             children: [
               _SettingRow(
@@ -318,6 +320,7 @@ class SettingsScreen extends ConsumerWidget {
           // ── APPEARANCE ──
           _sectionHeader('APPEARANCE', LucideIcons.palette, colorScheme.primary),
           _cardContainer(
+            context: context,
             colorScheme: colorScheme,
             children: [
               _SettingRow(
@@ -449,6 +452,7 @@ class SettingsScreen extends ConsumerWidget {
           // ── DOCUMENT VIEWER ──
           _sectionHeader('DOCUMENT VIEWER', LucideIcons.book_open, colorScheme.primary),
           _cardContainer(
+            context: context,
             colorScheme: colorScheme,
             children: [
               _SettingSwitchRow(
@@ -490,6 +494,7 @@ class SettingsScreen extends ConsumerWidget {
           // ── FILE MANAGEMENT ──
           _sectionHeader('FILE MANAGEMENT', LucideIcons.folder, colorScheme.primary),
           _cardContainer(
+            context: context,
             colorScheme: colorScheme,
             children: [
               _SettingSwitchRow(
@@ -515,6 +520,7 @@ class SettingsScreen extends ConsumerWidget {
           // ── STORAGE ──
           _sectionHeader('STORAGE', LucideIcons.hard_drive, colorScheme.primary),
           _cardContainer(
+            context: context,
             colorScheme: colorScheme,
             children: [
               _SettingRow(
@@ -534,6 +540,7 @@ class SettingsScreen extends ConsumerWidget {
           // ── PRIVACY & SECURITY ──
           _sectionHeader('PRIVACY & SECURITY', LucideIcons.shield, colorScheme.primary),
           _cardContainer(
+            context: context,
             colorScheme: colorScheme,
             children: [
               _SettingRow(
@@ -557,6 +564,7 @@ class SettingsScreen extends ConsumerWidget {
           // ── ABOUT ──
           _sectionHeader('ABOUT', LucideIcons.info, colorScheme.primary),
           _cardContainer(
+            context: context,
             colorScheme: colorScheme,
             children: [
               const _SettingRow(
@@ -645,12 +653,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _cardContainer({required ColorScheme colorScheme, required List<Widget> children}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
+  Widget _cardContainer({required BuildContext context, required ColorScheme colorScheme, required List<Widget> children}) {
+    return DecoratedBox(
+      decoration: ClayDecorations.card(
+        context,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outline.withAlpha(50)),
       ),
       child: Column(
         children: children,

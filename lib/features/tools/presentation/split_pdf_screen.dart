@@ -6,6 +6,7 @@ import 'package:docora/core/theme/app_colors.dart';
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_radius.dart';
 import 'package:docora/core/theme/app_spacing.dart';
+import 'package:docora/core/theme/clay_decorations.dart';
 import 'package:docora/core/widgets/docora_button.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -387,16 +388,14 @@ class _SplitPdfScreenState extends State<SplitPdfScreen> {
   Widget _buildFileInfoCard(ColorScheme colorScheme) {
     final fileName = p.basename(_filePath!);
 
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(
-          color: colorScheme.outline.withValues(alpha: 0.18),
-        ),
+    return DecoratedBox(
+      decoration: ClayDecorations.card(
+        context,
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
@@ -454,18 +453,19 @@ class _SplitPdfScreenState extends State<SplitPdfScreen> {
           ),
         ],
       ),
+      ),
     );
   }
 
   Widget _buildModeSelector(ColorScheme colorScheme) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+    return DecoratedBox(
+      decoration: ClayDecorations.subtle(
+        context,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.15)),
       ),
-      padding: const EdgeInsets.all(4),
-      child: Row(
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: Row(
         children: [
           Expanded(
             child: _ModeTab(
@@ -490,6 +490,7 @@ class _SplitPdfScreenState extends State<SplitPdfScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:docora/core/theme/app_radius.dart';
 import 'package:docora/core/theme/app_spacing.dart';
+import 'package:docora/core/theme/clay_decorations.dart';
 import 'package:docora/core/widgets/docora_button.dart';
 import 'package:flutter/material.dart';
 
@@ -52,9 +53,10 @@ class DocoraEmptyState extends StatelessWidget {
                 child: Container(
                   width: 64,
                   height: 64,
-                  decoration: BoxDecoration(
+                  decoration: ClayDecorations.tile(
+                    context,
                     borderRadius: BorderRadius.circular(AppRadius.lg),
-                    color: resolvedIconColor.withValues(alpha: 0.15),
+                    accentColor: resolvedIconColor,
                   ),
                   child: Icon(
                     icon,

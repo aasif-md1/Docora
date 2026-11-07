@@ -6,6 +6,7 @@ import 'package:docora/core/theme/format_helpers.dart';
 import 'package:docora/core/widgets/widgets.dart';
 import 'package:docora/domain/entities/document_entity.dart';
 import 'package:docora/features/files/presentation/providers/files_providers.dart';
+import 'package:docora/features/settings/presentation/providers/settings_provider.dart';
 import 'package:docora/features/files/presentation/widgets/file_details_dialog.dart';
 import 'package:docora/features/files/presentation/widgets/rename_dialog.dart';
 import 'package:docora/features/files/presentation/widgets/sort_bottom_sheet.dart';
@@ -264,7 +265,9 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
               tooltip: isGridView ? 'List view' : 'Grid view',
               onPressed: () {
                 AppMotion.subtleHaptic();
-                ref.read(isGridViewProvider.notifier).state = !isGridView;
+                ref
+                    .read(defaultViewProvider.notifier)
+                    .setView(isGridView ? 'list' : 'grid');
               },
             ),
             // Sort Trigger

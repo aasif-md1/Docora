@@ -1,5 +1,6 @@
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_spacing.dart';
+import 'package:docora/core/theme/clay_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 
@@ -54,29 +55,12 @@ class DocoraBottomSheet extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final isAmoled = theme.scaffoldBackgroundColor == Colors.black;
 
-    final sheetBg = isAmoled ? const Color(0xFF0F0F0F) : colorScheme.surface;
-    final borderColor = isAmoled
-        ? const Color(0xFF222222)
-        : colorScheme.outlineVariant.withAlpha(60);
-
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: sheetBg,
+      decoration: ClayDecorations.prominent(
+        context,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(AppSpacing.radiusXl),
         ),
-        border: Border(
-          top: BorderSide(color: borderColor),
-          left: BorderSide(color: borderColor),
-          right: BorderSide(color: borderColor),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(30),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-          ),
-        ],
       ),
       child: SafeArea(
         top: false,

@@ -1,6 +1,7 @@
 import 'package:docora/core/theme/app_colors.dart';
 import 'package:docora/core/theme/app_motion.dart';
 import 'package:docora/core/theme/app_spacing.dart';
+import 'package:docora/core/theme/clay_decorations.dart';
 import 'package:docora/core/theme/format_helpers.dart';
 import 'package:docora/domain/entities/document_entity.dart';
 import 'package:docora/features/files/presentation/providers/files_providers.dart';
@@ -115,8 +116,13 @@ class _RecycleBinScreenState extends ConsumerState<RecycleBinScreen> {
                     final doc = _deletedDocs[index];
                     final format = DocumentFormat.fromExtension(doc.extension);
 
-                    return Card(
+                    return DecoratedBox(
+                      decoration: ClayDecorations.card(
+                        context,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                         leading: CircleAvatar(
                           backgroundColor: format.color.withAlpha(25),
                           child: Icon(format.icon, color: format.color, size: 20),
